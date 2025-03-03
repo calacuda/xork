@@ -1,0 +1,10 @@
+(
+  name: "Starter Town Gate",
+  mob_spawn_rate: 0.0,
+  // id: 0,
+  description: "In front of you there is a tall wrought iron gate & knights checking identifications.",
+  connections: {
+    North: "starter-town/gaurd-station.zone.ron",
+    South: "starter-woods/01.zone.ron",
+  }
+)

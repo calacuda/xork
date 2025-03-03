@@ -1,0 +1,337 @@
+use bevy::prelude::*;
+use bevy_renet::renet::{ChannelConfig, ClientId, ConnectionConfig, SendType};
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use std::time::Duration;
+
+pub mod client;
+pub mod server;
+
+pub type PlayerTextCmd = String;
+pub type PlayerSystemCmd = String;
+pub type ChatTimeStamp = DateTime<Utc>;
+pub type PlayerName = String;
+pub type Item = String;
+pub type Spell = String;
+pub type Enemy = String;
+pub type Ally = String;
+pub type CommandResponceType = Result<GenerincFlavorText, GenerincFlavorText>;
+
+pub const PROTOCOL_ID: u64 = 7;
+
+#[derive(Debug, Component)]
+pub struct Player {
+    pub id: ClientId,
+}
+
+// #[derive(Debug, Default, Clone, Serialize, Deserialize, Component, Resource)]
+// pub struct PlayerInput {
+//     command: Command,
+// }
+
+#[derive(Debug, Clone, Serialize, Deserialize, Event)]
+pub enum PlayerGameCommand {
+    GameComamnd { command: PlayerTextCmd },
+    SlashCommand { command: PlayerSystemCmd },
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum ChatRoom {
+    Server,
+    Zone,
+    Guild,
+    Party,
+    Dm(PlayerName),
+}
+
+/// sent from client -> server
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub struct ChatSay {
+    /// who should hear this message
+    chat_room: ChatRoom,
+    /// what to say
+    message: String,
+}
+
+/// sent from server -> clients. notifies client that a player said something.
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub struct PlayerSaid {
+    /// who said it
+    player: PlayerName,
+    /// who should hear this message
+    chat_room: ChatRoom,
+    /// what to say
+    message: String,
+    /// the time at which the server recved the message (in Utc)
+    time_stamp: ChatTimeStamp,
+}
+
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub enum ClientSystemCmd {
+    Auth {
+        user_name: String,
+        pass_hash: String,
+    },
+}
+
+/// the channels used by the client to send messages to the server.
+#[derive(Debug, Clone, Copy)]
+pub enum ClientChannel {
+    /// ChatSay
+    ChatMessage,
+    /// PlayerGameCommand
+    GameCommand,
+    /// login/out, register, etc
+    SystemCommand,
+}
+
+/// used by the server to instruct the client on what flavor text to show the player.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum GenerincFlavorText {
+    /// a specific server generated flavor text.
+    Message(String),
+    /// tells the client to pick a random flavor text of type FlavorTextType
+    Random(
+        // TODO: make FlavorTextType enum
+
+        // FlavorTextType
+    ),
+    /// tells the client to get a specific flavor text of type FlavorTextType, with an id
+    Specific {
+        // flavor_type: FlavorTextType,
+        /// the ID of the flavor text to show.
+        id: u64,
+    },
+}
+
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub enum ServerSystemMessages {
+    PlayerEnteredZone {
+        /// describes where the player came from. ("the door", "the [CARDINAL DIRECTION]", etc)
+        from: String,
+        player_name: PlayerName,
+    },
+    PlayerLeftZone {
+        /// describes where the player went. ("through the door", "[CARDINAL DIRECTION]", etc)
+        went: String,
+        player_name: PlayerName,
+    },
+    ServerAnouncement {
+        message: String,
+        is_bbs: bool,
+        tts: bool,
+    },
+    // CommandFailed(String),
+    /// used to signify that a command was sucessful (encoded as Ok(())) or that a command failed
+    /// (encoded as Err(GenerincFlavorText), with the GenerincFlavorText representing a description of the error, a message
+    /// to the player, etc).
+    CommandResponce(CommandResponceType),
+}
+
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub enum ServerZoneUpdate {
+    New {
+        name: String,
+        flavor: String,
+        /// named npcs around the the zone
+        npc_names: Vec<String>,
+        /// mobs seen in the zone
+        mob_names: Vec<String>,
+    },
+    Examine {
+        /// the further description
+        flavor: Option<String>,
+        /// any items found apon closer inspection.
+        items: Vec<String>,
+    },
+}
+
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub enum ServerPlayerUpdate {
+    /// player aquired Item
+    AquiredItem(Item),
+    /// player lost Item
+    LoseItem(Item),
+    /// covers gained and lost money
+    NewMoney(u32),
+    /// xp can only be gained.
+    GainedXp(u32),
+    /// level can only go up.
+    LevelUp(u8),
+    NewSpell(Spell),
+}
+
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub enum StateChange {
+    Shop {},
+    Battle {
+        with: Vec<Enemy>,
+        allies: Vec<Ally>,
+    },
+    /// normal mode
+    Adventure,
+}
+
+#[derive(Debug, Serialize, Deserialize, Event)]
+pub enum AccountMessage {
+    LoggedIn,
+    LoggedOut,
+    Banned { reason: String },
+    JoinedGuild { guild_name: String },
+    LeftGuiled { kicked: bool, guild_name: String },
+    RegisteredNewAccount,
+}
+
+/// the channels used by the server to send messages to a client.
+#[derive(Debug, Clone, Copy)]
+pub enum ServerChannel {
+    /// a user said...
+    /// sends message: PlayerSaid
+    ChatMessage,
+    /// players left/entered the zone, server/BBS anouncements, command failed
+    /// sends message: ServerSystemMessages
+    SystemMessages,
+    /// new zone info
+    /// sends message: ServerZoneUpdate
+    ZoneUpdate,
+    /// player gained xp, leveled up, got item, joined guild/party, etc
+    /// sends message: ServerPlayerUpdate
+    PlayerUpdate,
+    /// enter shop mode, enter battle mode, enter adventure mode, etc
+    /// sends message: StateChange
+    StateChange,
+    /// account made, logged in/out, banned, joined/left/kicked-from guild
+    /// sends message: AccountMessage
+    AccountMessages,
+}
+
+/// messages form the server
+#[derive(Debug, Serialize, Deserialize, Component)]
+pub enum ServerMessages {
+    PlayerCreate {
+        entity: Entity,
+        id: ClientId,
+        translation: [f32; 3],
+    },
+    PlayerRemove {
+        id: ClientId,
+    },
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct NetworkedEntities {
+    pub entities: Vec<Entity>,
+    pub translations: Vec<[f32; 3]>,
+}
+
+impl From<ClientChannel> for u8 {
+    fn from(channel_id: ClientChannel) -> Self {
+        match channel_id {
+            ClientChannel::GameCommand => 0,
+            ClientChannel::ChatMessage => 1,
+            ClientChannel::SystemCommand => 2,
+        }
+    }
+}
+
+impl ClientChannel {
+    pub fn channels_config() -> Vec<ChannelConfig> {
+        [
+            ChannelConfig {
+                channel_id: Self::GameCommand.into(),
+                max_memory_usage_bytes: 5 * 1024 * 1024,
+                send_type: SendType::ReliableOrdered {
+                    resend_time: Duration::ZERO,
+                },
+            },
+            ChannelConfig {
+                channel_id: Self::ChatMessage.into(),
+                max_memory_usage_bytes: 5 * 1024 * 1024,
+                send_type: SendType::ReliableOrdered {
+                    resend_time: Duration::ZERO,
+                },
+            },
+            ChannelConfig {
+                channel_id: Self::SystemCommand.into(),
+                max_memory_usage_bytes: 5 * 1024 * 1024,
+                send_type: SendType::ReliableOrdered {
+                    resend_time: Duration::ZERO,
+                },
+            },
+        ]
+        .into()
+    }
+}
+
+impl From<ServerChannel> for u8 {
+    fn from(channel_id: ServerChannel) -> Self {
+        match channel_id {
+            ServerChannel::SystemMessages => 0,
+            ServerChannel::ZoneUpdate => 1,
+            ServerChannel::StateChange => 2,
+            ServerChannel::PlayerUpdate => 3,
+            ServerChannel::ChatMessage => 4,
+            ServerChannel::AccountMessages => 5,
+        }
+    }
+}
+
+impl ServerChannel {
+    pub fn channels_config() -> Vec<ChannelConfig> {
+        [
+            ChannelConfig {
+                channel_id: Self::SystemMessages.into(),
+                max_memory_usage_bytes: 10 * 1024 * 1024,
+                send_type: SendType::ReliableUnordered {
+                    resend_time: Duration::from_millis(200),
+                },
+            },
+            ChannelConfig {
+                channel_id: Self::ZoneUpdate.into(),
+                max_memory_usage_bytes: 10 * 1024 * 1024,
+                send_type: SendType::ReliableOrdered {
+                    resend_time: Duration::from_millis(100),
+                },
+            },
+            ChannelConfig {
+                channel_id: Self::StateChange.into(),
+                max_memory_usage_bytes: 10 * 1024 * 1024,
+                send_type: SendType::ReliableOrdered {
+                    resend_time: Duration::from_millis(100),
+                },
+            },
+            ChannelConfig {
+                channel_id: Self::PlayerUpdate.into(),
+                max_memory_usage_bytes: 10 * 1024 * 1024,
+                send_type: SendType::ReliableOrdered {
+                    resend_time: Duration::from_millis(350),
+                },
+            },
+            ChannelConfig {
+                channel_id: Self::ChatMessage.into(),
+                max_memory_usage_bytes: 10 * 1024 * 1024,
+                // this can be unordered bc the client can reorder the messages using the time
+                // stamps
+                send_type: SendType::ReliableUnordered {
+                    resend_time: Duration::from_millis(400),
+                },
+            },
+            ChannelConfig {
+                channel_id: Self::AccountMessages.into(),
+                max_memory_usage_bytes: 10 * 1024 * 1024,
+                send_type: SendType::ReliableOrdered {
+                    resend_time: Duration::from_millis(500),
+                },
+            },
+        ]
+        .into()
+    }
+}
+
+pub fn connection_config() -> ConnectionConfig {
+    ConnectionConfig {
+        available_bytes_per_tick: 1024 * 1024,
+        client_channels_config: ClientChannel::channels_config(),
+        server_channels_config: ServerChannel::channels_config(),
+    }
+}

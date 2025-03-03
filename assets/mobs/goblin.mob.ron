@@ -1,0 +1,10 @@
+(
+  name: "goblin",
+  spawn_rate: 0.025,
+  atk: 5.0,
+  def: 0.5,
+  mag_atk: 0.01,
+  mag_def: 0.01,
+  speed: 2.5,
+  agro: 80.0,
+)

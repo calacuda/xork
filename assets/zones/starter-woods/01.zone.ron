@@ -1,0 +1,10 @@
+(
+  name: "Starter Woods",
+  // id: 1,
+  mob_spawn_rate: 0.05,
+  description: "You stand in a clearing near the endge of the woods, to the north you a path to the town gate.",
+  examine: Some("Looking at the ground closely you can see some goblin foot prints"),
+  connections: {
+    North: "starter-town/gate.zone.ron"
+  }
+)

@@ -1,0 +1,10 @@
+(
+  name: "Starter Town Gate (Gaurd Station)",
+  // id: 1,
+  mob_spawn_rate: 0.0,
+  description: "A knight of the kingdom asks to see your identification & you ablidge. The knight says \"Welcome to the fucking city!\"",
+  examine: Some("The gaurd is wearing a name plate that says \"Knight of the Republic; Sir. Swaresa lot\""),
+  connections: {
+    South: "starter-town/gate.zone.ron"
+  }
+)
