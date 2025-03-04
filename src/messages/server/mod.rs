@@ -9,7 +9,7 @@ use bevy_renet::renet::{ChannelConfig, ClientId, SendType};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-pub type CommandResponceType = Result<GenerincFlavorText, GenerincFlavorText>;
+pub type CommandResponseType = Result<GenerincFlavorText, GenerincFlavorText>;
 pub type FlavorTextId = u64;
 
 /// sent from server -> clients. notifies client that a player said something.
@@ -72,16 +72,16 @@ pub enum ServerSystemMessagesEvent {
         player_name: PlayerName,
         left: ZoneId,
     },
-    ServerAnouncement {
+    ServerAnnouncement {
         message: String,
         is_bbs: bool,
         tts: bool,
     },
     // CommandFailed(String),
-    /// used to signify that a command was sucessful (encoded as Ok(())) or that a command failed
+    /// used to signify that a command was successful (encoded as Ok(())) or that a command failed
     /// (encoded as Err(GenerincFlavorText), with the GenerincFlavorText representing a description of the error, a message
     /// to the player, etc).
-    CommandResponce(CommandResponceType),
+    CommandResponse(CommandResponseType),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -96,16 +96,16 @@ pub enum ServerSystemMessages {
         went: Option<Direction>,
         player_name: PlayerName,
     },
-    ServerAnouncement {
+    ServerAnnouncement {
         message: String,
         is_bbs: bool,
         tts: bool,
     },
     // CommandFailed(String),
-    /// used to signify that a command was sucessful (encoded as Ok(())) or that a command failed
+    /// used to signify that a command was successful (encoded as Ok(())) or that a command failed
     /// (encoded as Err(GenerincFlavorText), with the GenerincFlavorText representing a description of the error, a message
     /// to the player, etc).
-    CommandResponce(CommandResponceType),
+    CommandResponse(CommandResponseType),
 }
 
 #[derive(Debug, Serialize, Deserialize, Event)]
@@ -121,15 +121,15 @@ pub enum ServerZoneUpdate {
     Examine {
         /// the further description
         flavor: Option<String>,
-        // /// any items found apon closer inspection.
+        // /// any items found upon closer inspection.
         // items: Vec<ItemId>,
     },
 }
 
 #[derive(Debug, Serialize, Deserialize, Event)]
 pub enum ServerPlayerUpdate {
-    /// player aquired Item
-    AquiredItem(Item),
+    /// player acquired Item
+    AcquiredItem(Item),
     /// player lost Item
     LoseItem(Item),
     /// covers gained and lost money
@@ -145,7 +145,7 @@ pub enum ServerPlayerUpdate {
 pub enum StateChange {
     Shop {},
     Battle {
-        battle_tyep: BattleWith,
+        battle_type: BattleWith,
         with: Vec<Enemy>,
         allies: Vec<Ally>,
     },

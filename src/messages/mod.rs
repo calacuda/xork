@@ -44,7 +44,7 @@ pub enum ChatRoom {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Event)]
 pub enum PlayerGameCommand {
-    GameComamnd { command: PlayerTextCmd },
+    GameCommand { command: PlayerTextCmd },
     SlashCommand { command: PlayerSystemCmd },
 }
 
