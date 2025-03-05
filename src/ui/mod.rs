@@ -1,7 +1,16 @@
 use std::f32::consts::PI;
-
 use bevy::{
-    asset::RenderAssetUsages, color::palettes::{css::GREEN, tailwind::{AMBER_50, AMBER_500, AMBER_950}}, prelude::*, render::render_resource::{Extent3d, TextureDimension, TextureFormat}
+    asset::RenderAssetUsages,
+    color::palettes::{
+        css::GREEN,
+        tailwind::AMBER_500
+    },
+    prelude::*,
+    render::render_resource::{
+        Extent3d,
+        TextureDimension,
+        TextureFormat
+    }
 };
 
 #[derive(Component)]

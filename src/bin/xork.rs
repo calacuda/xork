@@ -1,9 +1,8 @@
 use bevy::{
-    color::palettes::css::{GREEN, WHITE},
+    color::palettes::css::GREEN,
     log::{Level, LogPlugin},
     pbr::wireframe::{WireframeConfig, WireframePlugin},
     prelude::*,
-    sprite::{Wireframe2dConfig, Wireframe2dPlugin},
     window::PresentMode,
 };
 use bevy_common_assets::ron::RonAssetPlugin;
