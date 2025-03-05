@@ -6,13 +6,6 @@ use bevy::{
     window::PresentMode,
 };
 use bevy_common_assets::ron::RonAssetPlugin;
-// use bevy_iced::{
-//     IcedContext, IcedPlugin, IcedSettings,
-//     iced::{
-//         self, Alignment, Color, Length,
-//         widget::{Column, Container, Row, container::rounded_box, text},
-//     },
-// };
 use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
     CommandEntered, CommandResultEvent, Notification, PlayerLook, PlayerMovement, UiMessage,
