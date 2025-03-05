@@ -1,5 +1,5 @@
 use bevy::{
-    color::palettes::css::WHITE,
+    color::palettes::css::{GREEN, WHITE},
     log::{Level, LogPlugin},
     pbr::wireframe::{WireframeConfig, WireframePlugin},
     prelude::*,
@@ -83,7 +83,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             global: true,
             // Controls the default color of all wireframes. Used as the default color for global wireframes.
             // Can be changed per mesh using the `WireframeColor` component.
-            default_color: WHITE.into(),
+            default_color: GREEN.into(),
         })
         // .insert_resource(Wireframe2dConfig {
         //     // The global wireframe config enables drawing of wireframes on every mesh,

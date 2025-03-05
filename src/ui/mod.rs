@@ -1,9 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::{
-    asset::RenderAssetUsages,
-    prelude::*,
-    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
+    asset::RenderAssetUsages, color::palettes::{css::GREEN, tailwind::{AMBER_50, AMBER_500, AMBER_950}}, prelude::*, render::render_resource::{Extent3d, TextureDimension, TextureFormat}
 };
 
 #[derive(Component)]
@@ -87,10 +85,10 @@ fn camera_setup(
     ));
 
     let cube = meshes.add(Cuboid::default());
-    let debug_material = materials.add(StandardMaterial {
-        base_color_texture: Some(images.add(uv_debug_texture())),
-        ..default()
-    });
+    // let debug_material = materials.add(StandardMaterial {
+    //     base_color_texture: Some(images.add(uv_debug_texture())),
+    //     ..default()
+    // });
 
     commands
         .spawn((
@@ -159,11 +157,11 @@ fn camera_setup(
                                 ..Default::default()
                             }, 
                             // BackgroundColor(Color::BLACK),
-                            BorderColor(Color::WHITE),
+                            // BorderColor(Color::WHITE),
                             Outline {
                                 width: Val::Px(5.),
                                 offset: Val::Px(0.0),
-                                color: Color::WHITE,
+                                color: GREEN.into(),
                             },
                             MainTextBody,
                         ))
@@ -184,6 +182,7 @@ fn camera_setup(
                                     Text::new(format!("{i} -> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")),
                                     text_font.clone().with_font_size(30.0),
                                     TextLayout::new_with_justify(JustifyText::Left).with_linebreak(LineBreak::WordBoundary),
+                                    TextColor(AMBER_500.into()),
                                     Node {
                                         margin: UiRect {
                                             left: Val::Percent(2.5),
@@ -203,7 +202,7 @@ fn camera_setup(
                             // Text::new("MOCK-CMD"),
                             // TextSpan::new(["> ", "MOCK-CMD"]),
                             TextSpan::default(),
-                            text_font.clone().with_font_size(60.0),
+                            // text_font.clone().with_font_size(60.0),
                             // TextLayout::new_with_justify(JustifyText::Left),
                             Node {
                                 height: Val::Percent(((9.0 - 8.0) / 9.0) * (100.0 - 10.)),
@@ -223,17 +222,18 @@ fn camera_setup(
                                 ..Default::default()
                             },
                             // BackgroundColor(Color::BLACK),
-                            BorderColor(Color::WHITE),
+                            // BorderColor(Color::WHITE),
                             Outline {
                                 width: Val::Px(5.),
                                 offset: Val::Px(0.),
-                                color: Color::WHITE,
+                                color: GREEN.into(),
                             },
                             // CmdPrompt,
                         ))
                         .with_children(|parent| {
                             parent.spawn((
                                 Text::new("> "),
+                                TextColor(AMBER_500.into()),
                                 text_font.clone().with_font_size(60.0),
                                 TextLayout::new_with_justify(JustifyText::Left),
                                 Node {
@@ -250,6 +250,7 @@ fn camera_setup(
 
                             parent.spawn((
                                 Text::new("go north"),
+                                TextColor(AMBER_500.into()),
                                 text_font.clone().with_font_size(60.0),
                                 TextLayout::new_with_justify(JustifyText::Left),
                                 Node {
@@ -313,11 +314,11 @@ fn camera_setup(
                             ..Default::default()
                         },
                         // BackgroundColor(Color::BLACK),
-                        BorderColor(Color::WHITE),
+                        // BorderColor(Color::WHITE),
                         Outline {
                             width: Val::Px(5.),
                             offset: Val::Px(0.),
-                            color: Color::WHITE,
+                            color: GREEN.into(),
                         },
                     ))
                     .with_children(|parent| {
@@ -341,6 +342,7 @@ fn camera_setup(
                                 parent.spawn((
                                     Text::new("STATS: "),
                                     text_font.clone().with_font_size(60.0),
+                                    TextColor(AMBER_500.into()),
                                     TextLayout::new_with_justify(JustifyText::Left).with_linebreak(LineBreak::WordBoundary),
                                     Node {
                                         // flex_direction: FlexDirection::Row,
@@ -377,7 +379,7 @@ fn camera_setup(
 
     commands.spawn((
         Mesh3d(cube),
-        MeshMaterial3d(debug_material.clone()),
+        // MeshMaterial3d(debug_material.clone()),
         Transform::from_xyz(2.0, 2.0, 2.0).with_rotation(rot),
         Shape,
     ));
@@ -406,11 +408,11 @@ fn spawn_compass(parent: &mut <EntityCommands<'_> as BuildChildren>::Builder<'_>
                 ..Default::default()
             },
             // BackgroundColor(Color::BLACK),
-            BorderColor(Color::WHITE),
+            // BorderColor(Color::WHITE),
             Outline {
                 width: Val::Px(5.),
                 offset: Val::Px(5.),
-                color: Color::WHITE,
+                color: GREEN.into(),
             },
         )
     ).with_children(
@@ -498,7 +500,7 @@ fn spawn_compass(parent: &mut <EntityCommands<'_> as BuildChildren>::Builder<'_>
                     );
                     parent.spawn(
                         (
-                            Text::new(" "),
+                            Text::new("*"),
                             text_font.clone().with_font_size(25.0),
                             TextLayout::new_with_justify(JustifyText::Center),
                         )
