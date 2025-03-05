@@ -1,4 +1,3 @@
-use std::f32::consts::PI;
 use bevy::{
     asset::RenderAssetUsages,
     color::palettes::{
@@ -12,6 +11,7 @@ use bevy::{
         TextureFormat
     }
 };
+use std::f32::consts::PI;
 
 #[derive(Component)]
 pub struct GameCamera;
