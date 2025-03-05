@@ -21,6 +21,36 @@ pub struct MainTextBody;
 #[derive(Component)]
 pub struct CmdPrompt;
 
+#[derive(Component)]
+pub struct CompassUpText;
+
+#[derive(Component)]
+pub struct CompassDownText;
+
+#[derive(Component)]
+pub struct CompassNorthText;
+
+#[derive(Component)]
+pub struct CompassSouthText;
+
+#[derive(Component)]
+pub struct CompassEastText;
+
+#[derive(Component)]
+pub struct CompassWestText;
+
+#[derive(Component)]
+pub struct CompassNorthEastText;
+
+#[derive(Component)]
+pub struct CompassNorthWestText;
+
+#[derive(Component)]
+pub struct CompassSouthEastText;
+
+#[derive(Component)]
+pub struct CompassSouthWestText;
+
 /// A marker component for our shapes so we can query them separately from the ground plane
 #[derive(Component)]
 struct Shape;
@@ -47,10 +77,13 @@ fn camera_setup(
         ..default()
     };
 
+    commands.insert_resource(ClearColor(Color::BLACK));
+
     commands.spawn((
         Camera3d::default(),
         Transform::from_xyz(0.0, 0.0, 14.0).looking_at(Vec3::new(-3.5, 0.0, 0.0), Vec3::Y),
         GameCamera,
+        // ClearColorConfig: (Color::BLACK),
     ));
 
     let cube = meshes.add(Cuboid::default());
@@ -116,16 +149,22 @@ fn camera_setup(
                                 // margin: UiRect::bottom(Val::Percent(())),
                                 // justify_content: JustifyContent::FlexStart,
                                 flex_direction: FlexDirection::Column,
-                                margin: UiRect {
-                                    left: Val::Px(0.0),
-                                    right: Val::Px(0.0),
-                                    top: Val::Px(0.0),
-                                    bottom: Val::Px(0.0),
-                                },
+                                // margin: UiRect {
+                                //     left: Val::Px(0.0),
+                                //     right: Val::Px(0.0),
+                                //     top: Val::Px(0.0),
+                                //     bottom: Val::Px(0.0),
+                                // },
                                 overflow: Overflow::clip_y(),
                                 ..Default::default()
                             }, 
-                            BackgroundColor(Color::BLACK),
+                            // BackgroundColor(Color::BLACK),
+                            BorderColor(Color::WHITE),
+                            Outline {
+                                width: Val::Px(5.),
+                                offset: Val::Px(0.0),
+                                color: Color::WHITE,
+                            },
                             MainTextBody,
                         ))
                         .with_children(|parent| {
@@ -140,11 +179,20 @@ fn camera_setup(
                             //     text_font.clone().with_font_size(45.0),
                             //     TextLayout::new_with_justify(JustifyText::Left),
                             // ));
-                            for i in 0..8 {
+                            for i in 0..10 {
                                 parent.spawn((
-                                    Text::new(format!("{i} -> Use the panel on the right to change the Display and Visibility properties for the respective nodes of the panel on the left")),
+                                    Text::new(format!("{i} -> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")),
                                     text_font.clone().with_font_size(30.0),
                                     TextLayout::new_with_justify(JustifyText::Left).with_linebreak(LineBreak::WordBoundary),
+                                    Node {
+                                        margin: UiRect {
+                                            left: Val::Percent(2.5),
+                                            right: Val::Percent(2.5),
+                                            top: Val::Percent(1.25),
+                                            bottom: Val::Percent(1.25),
+                                        },
+                                        ..Default::default()
+                                    }
                                 ));
                             }
                         });
@@ -170,10 +218,17 @@ fn camera_setup(
                                     right: Val::Px(0.0),
                                     top: Val::Percent(2.5),
                                     bottom: Val::Px(0.0),
+                                    // bottom: Val::Percent(2.5),
                                 },
                                 ..Default::default()
                             },
-                            BackgroundColor(Color::BLACK),
+                            // BackgroundColor(Color::BLACK),
+                            BorderColor(Color::WHITE),
+                            Outline {
+                                width: Val::Px(5.),
+                                offset: Val::Px(0.),
+                                color: Color::WHITE,
+                            },
                             // CmdPrompt,
                         ))
                         .with_children(|parent| {
@@ -181,12 +236,32 @@ fn camera_setup(
                                 Text::new("> "),
                                 text_font.clone().with_font_size(60.0),
                                 TextLayout::new_with_justify(JustifyText::Left),
+                                Node {
+                                    margin: UiRect {
+                                        left: Val::Percent(2.5),
+                                        right: Val::Px(0.0),
+                                        top: Val::Px(0.0),
+                                        bottom: Val::Percent(1.25),
+                                        // bottom: Val::Px(0.0),
+                                    },
+                                    ..Default::default()
+                                },
                             ));
 
                             parent.spawn((
                                 Text::new("go north"),
                                 text_font.clone().with_font_size(60.0),
                                 TextLayout::new_with_justify(JustifyText::Left),
+                                Node {
+                                    margin: UiRect {
+                                        left: Val::Px(0.0),
+                                        right: Val::Px(0.0),
+                                        top: Val::Px(0.0),
+                                        bottom: Val::Percent(1.25),
+                                        // bottom: Val::Px(0.0),
+                                    },
+                                    ..Default::default()
+                                },
                                 CmdPrompt,
                             ));
                     });
@@ -195,7 +270,7 @@ fn camera_setup(
                 Node {
                     width: Val::Percent((6.0 / 16.0) * (100.0 - 7.5)),
                     // height: Val::Percent((7.5 / 9.0) * 100.0),
-                    height: Val::Percent(100.0 - 3.0),
+                    height: Val::Percent(100.0 - 4.125),
                     flex_direction: FlexDirection::Column,
                     align_items: AlignItems::End,
                     // justify_content: JustifyContent::SpaceEvenly,
@@ -222,29 +297,13 @@ fn camera_setup(
                             // height: Val::Percent((7.5 / 9.0) * 100.0),
                             height: Val::Percent(0.5 * 100.0),
                             flex_direction: FlexDirection::Column,
-                            align_items: AlignItems::End,
+                            // align_items: AlignItems::End,
                             // justify_content: JustifyContent::SpaceEvenly,
-                            justify_content: JustifyContent::End,
+                            // justify_content: JustifyContent::End,
                             // justify_content: JustifyContent::Center,
                             // position_type: PositionType::Relative,
                             // top: Val::ZERO,
                             // left: Val::ZERO,
-                            // margin: UiRect {
-                            //     left: Val::Percent(2.5),
-                            //     right: Val::Percent(2.5),
-                            //     top: Val::Percent(2.5),
-                            //     bottom: Val::Percent(2.5),
-                            // },
-                            ..Default::default()
-                        },
-                        BackgroundColor(Color::BLACK),
-                    ));
-            })
-            .with_children(|parent| {
-                parent
-                    .spawn((
-                        Node {
-                            flex_direction: FlexDirection::Row,
                             margin: UiRect {
                                 left: Val::Percent(2.5),
                                 right: Val::Percent(2.5),
@@ -253,12 +312,52 @@ fn camera_setup(
                             },
                             ..Default::default()
                         },
+                        // BackgroundColor(Color::BLACK),
+                        BorderColor(Color::WHITE),
+                        Outline {
+                            width: Val::Px(5.),
+                            offset: Val::Px(0.),
+                            color: Color::WHITE,
+                        },
                     ))
                     .with_children(|parent| {
-                        // TODO: Spawn "STATS" label text here
-                        // TODO: Spawn "compas" label text here
+                        parent
+                            .spawn((
+                                Node {
+                                    flex_direction: FlexDirection::Row,
+                                    width: Val::Percent(100.0),
+                                    margin: UiRect {
+                                        left: Val::Percent(2.5),
+                                        right: Val::Percent(2.5),
+                                        top: Val::Percent(2.5),
+                                        bottom: Val::Percent(2.5),
+                                    },
+                                    align_items: AlignItems::Start,
+                                    ..Default::default()
+                                },
+                            ))
+                            .with_children(|parent| {
+                                // TODO: Spawn "STATS" label text here
+                                parent.spawn((
+                                    Text::new("STATS: "),
+                                    text_font.clone().with_font_size(60.0),
+                                    TextLayout::new_with_justify(JustifyText::Left).with_linebreak(LineBreak::WordBoundary),
+                                    Node {
+                                        // flex_direction: FlexDirection::Row,
+                                        margin: UiRect {
+                                            left: Val::Percent(2.5),
+                                            right: Val::Percent(7.5),
+                                            top: Val::Percent(2.5),
+                                            bottom: Val::Percent(2.5),
+                                        },
+                                        ..Default::default()
+                                    },
+                                ));
+                                // TODO: Spawn "compass" label text here
+                                spawn_compass(parent, text_font.clone());
+                            });
+                        // TODO: spawn stats display.
                     });
-                // TODO: spawn stats display.
             });
     });
 
@@ -282,6 +381,173 @@ fn camera_setup(
         Transform::from_xyz(2.0, 2.0, 2.0).with_rotation(rot),
         Shape,
     ));
+}
+
+fn spawn_compass(parent: &mut <EntityCommands<'_> as BuildChildren>::Builder<'_>, text_font: TextFont) {
+    parent.spawn(
+        (
+            // Text::new("STATS:"),
+            // text_font.clone().with_font_size(60.0),
+            // TextLayout::new_with_justify(JustifyText::Left).with_linebreak(LineBreak::WordBoundary),
+            Node {
+                width: Val::Percent(100.0),
+                flex_direction: FlexDirection::Row,
+                justify_content: JustifyContent::SpaceAround,
+                // align_content: AlignContent::SpaceAround,
+                // justify_self: JustifySelf::End,
+                // align_self: AlignSelf::End,
+                margin: UiRect {
+                    left: Val::Percent(2.5),
+                    right: Val::Percent(2.5),
+                    top: Val::Percent(2.5),
+                    bottom: Val::Percent(2.5),
+                },
+                // UiRect::all(Val::Px(10.)),
+                ..Default::default()
+            },
+            // BackgroundColor(Color::BLACK),
+            BorderColor(Color::WHITE),
+            Outline {
+                width: Val::Px(5.),
+                offset: Val::Px(5.),
+                color: Color::WHITE,
+            },
+        )
+    ).with_children(
+        |parent| {
+            parent.spawn(
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    justify_content: JustifyContent::SpaceEvenly,
+                    ..Default::default()
+                }
+            ).with_children(
+                |parent| {
+                    parent.spawn(
+                        (
+                            Text::new("U"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassUpText,
+                        )
+                    );
+                    // parent.spawn(
+                    //     (
+                    //         Text::new(" "),
+                    //         text_font.clone().with_font_size(25.0),
+                    //         TextLayout::new_with_justify(JustifyText::Center),
+                    //     )
+                    // );
+                    parent.spawn(
+                        (
+                            Text::new("D"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassDownText,
+                        )
+                    );
+                }
+            );
+            parent.spawn(
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    ..Default::default()
+                }
+            ).with_children(
+                |parent| {
+                    parent.spawn(
+                        (
+                            Text::new("NW"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassNorthWestText,
+                        )
+                    );
+                    parent.spawn(
+                        (
+                            Text::new("W"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassWestText,
+                        )
+                    );
+                    parent.spawn(
+                        (
+                            Text::new("SW"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassSouthWestText,
+                        )
+                    );
+                }
+            );
+            parent.spawn(
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    ..Default::default()
+                }
+            ).with_children(
+                |parent| {
+                    parent.spawn(
+                        (
+                            Text::new("N"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassNorthText,
+                        )
+                    );
+                    parent.spawn(
+                        (
+                            Text::new(" "),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                        )
+                    );
+                    parent.spawn(
+                        (
+                            Text::new("S"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassSouthText,
+                        )
+                    );
+                }
+            );
+            parent.spawn(
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    ..Default::default()
+                }
+            ).with_children(
+                |parent| {
+                    parent.spawn(
+                        (
+                            Text::new("NE"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassNorthEastText,
+                        )
+                    );
+                    parent.spawn(
+                        (
+                            Text::new("E"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassEastText,
+                        )
+                    );
+                    parent.spawn(
+                        (
+                            Text::new("SE"),
+                            text_font.clone().with_font_size(25.0),
+                            TextLayout::new_with_justify(JustifyText::Center),
+                            CompassSouthEastText,
+                        )
+                    );
+                }
+            );
+        }
+    );
 }
 
 fn rotate(mut query: Query<&mut Transform, With<Shape>>, time: Res<Time>) {
