@@ -6,12 +6,13 @@ use bevy::{
     window::PresentMode,
 };
 use bevy_common_assets::ron::RonAssetPlugin;
+use bevy_simple_text_input::TextInputPlugin;
 use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
     CommandEntered, CommandResultEvent, Notification, PlayerLook, PlayerMovement, UiMessage,
     mobs::{MobAsset, Mobs},
     state::{BattleWith, GameState},
-    ui::TextUiPlugin,
+    ui::{TextUiPlugin, set_camera_viewports},
     zones::{Zone, ZoneAsset, Zones},
 };
 
@@ -50,24 +51,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             RonAssetPlugin::<MobAsset>::new(&["mob.ron"]),
             TextUiPlugin,
             WireframePlugin,
+            TextInputPlugin,
             // Wireframe2dPlugin,
         ))
-        // .add_plugins(IcedPlugin::default())
         .insert_resource(Zones::default())
         .insert_resource(Mobs::default())
         // .configure_sets(Update, Adventure.run_if(in_state(GameState::Adventure)))
         // .configure_sets(Update, InGame.run_if(not(in_state(GameState::Startup))))
-        // .init_resource::<ClientTui>()
         .init_resource::<Zone>()
-        // .insert_resource(Term(terminal))
-        // .insert_resource(IcedSettings {
-        //     scale_factor: None,
-        //     theme: iced::Theme::CatppuccinMocha,
-        //     // style: Style {
-        //     //     text_color: iced::Color::from_rgb(0.0, 1.0, 1.0),
-        //     // },
-        //     ..Default::default()
-        // })
         .insert_resource(WireframeConfig {
             // The global wireframe config enables drawing of wireframes on every mesh,
             // except those with `NoWireframe`. Meshes with `Wireframe` will always have a wireframe,
@@ -77,20 +68,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             // Can be changed per mesh using the `WireframeColor` component.
             default_color: GREEN.into(),
         })
-        // .insert_resource(Wireframe2dConfig {
-        //     // The global wireframe config enables drawing of wireframes on every mesh,
-        //     // except those with `NoWireframe`. Meshes with `Wireframe` will always have a wireframe,
-        //     // regardless of the global configuration.
-        //     global: true,
-        //     // Controls the default color of all wireframes. Used as the default color for global wireframes.
-        //     // Can be changed per mesh using the `WireframeColor` component.
-        //     default_color: WHITE.into(),
-        // })
         .init_state::<GameState>()
         .init_state::<BattleWith>()
         .add_event::<CommandEntered>()
-        // .add_event::<SystemCmd>()
-        // .add_event::<PlayerGameCommand>()
         .add_event::<UiMessage>()
         .add_event::<PlayerMovement>()
         .add_event::<PlayerLook>()
@@ -102,6 +82,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         // .add_systems(
         //     Update,
         //     (
+        //         set_camera_viewports,
         //         // ui_system,
         //         // handle_events_system,
         //         // handle_player_movement,
@@ -116,8 +97,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         // TODO: Write audio login systems
         //
         // .add_systems(OnEnter(ClientState::Login), (auto_login_msg_send, auto_login_msg_recv).in_state(Connected) )
-        // .add_systems(Update, (tui_update).in_set(InGame))
-        // .set_runner(minimal_runner)
         .run();
 
     Ok(())

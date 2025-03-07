@@ -88,6 +88,7 @@ pub enum GameCmd {
         #[arg(action = ArgAction::Append, required = true, value_delimiter = ' ', num_args = 1.., use_value_delimiter = true)]
         thing: Vec<String>,
     },
+    // TODO: make a "map" command that allow the player to check a mini map.
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Event, Parser, PartialEq, Eq, PartialOrd, Ord)]
@@ -104,18 +105,22 @@ pub enum SlashCmd {
     //     #[arg(action = ArgAction::Append, required = true)]
     //     message: Vec<String>,
     // },
-    #[clap(name = "/help")]
+    #[clap(name = "/help", alias = "/?")]
     Help {
         // #[arg(required = true)]
         #[command(subcommand)]
         with: GameCmdName,
     },
+    #[clap(name = "/save")]
+    Save {
+        #[arg(required = true)]
+        // #[command(subcommand)]
+        save_slot: u8,
+    },
 }
 
 #[cfg(test)]
 mod test {
-    use crate::commands::commands::Direction;
-
     use super::{GameCmd, GameCmdName, SlashCmd};
     use clap::Parser;
 
@@ -131,6 +136,11 @@ mod test {
         let cmd = GameCmd::parse_from(["go", "n"]);
         // println!("{:?}", cmd.cmd);
         println!("{:?}", cmd);
+
+        let cmd = GameCmd::try_parse_from(["foo", "bar"]);
+        // println!("{:?}", cmd.cmd);
+        println!("{:?}", cmd);
+        assert!(cmd.is_err(), "foo bar is a command now?, since when?")
 
         // assert_eq!(
         //     cmd,

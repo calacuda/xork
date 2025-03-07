@@ -9,7 +9,6 @@ use zones::{FlavorTextId, FlavorTextType};
 pub mod commands;
 pub mod mobs;
 pub mod state;
-// pub mod tui;
 pub mod ui;
 pub mod zones;
 
@@ -53,10 +52,7 @@ pub enum GenerincFlavorText {
     /// a specific server generated flavor text.
     Message(String),
     /// tells the client to pick a random flavor text of type FlavorTextType
-    Random(
-        // TODO: make FlavorTextType enum
-        FlavorTextType,
-    ),
+    Random(FlavorTextType),
     /// tells the client to get a specific flavor text of type FlavorTextType, with an id
     Specific {
         flavor_type: FlavorTextType,
