@@ -1,10 +1,11 @@
 (
   name: "Starter Woods",
-  // id: 1,
-  mob_spawn_rate: 0.05,
-  description: "You stand in a clearing near the endge of the woods, to the north you a path to the town gate.",
-  examine: Some("Looking at the ground closely you can see some goblin foot prints"),
+  mob_spawn_rate: 0.00,
+  description: "You stand in a clearing near the edge of the woods. To the north you see a path to the town gate. To the west there is a destroyed goblin archers pertch that fell from a tree.",
+  examine: Some("Looking at the ground closely you can see some goblin foot prints heading south-east"),
   connections: {
-    North: "starter-town/gate.zone.ron"
+    North: "starter-town/gate.zone.ron",
+    West: "starter-woods/02.zone.ron",
+    SouthEast: "starter-woods/03.zone.ron",
   }
 )

@@ -1,0 +1,9 @@
+(
+  name: "Starter Woods",
+  mob_spawn_rate: 0.075,
+  description: "The Woods are getting thicker and less sun light is getting through the canopy of the thick old growth oak trees.",
+  examine: Some("Looking at the ground closely you can see some more goblin foot prints. You also observe drag marks, almost as if the goblins were dragging a dead goblin back to their den."),
+  connections: {
+    NorthWest: "starter-woods/01.zone.ron",
+  }
+)

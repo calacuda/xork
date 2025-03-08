@@ -1,7 +1,3 @@
-// use super::messages::{
-//     client::Direction,
-//     server::{FlavorTextId, FlavorTextType},
-// };
 use crate::HashMap;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -9,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::commands::commands::Direction;
 
 pub type ZoneId = String;
+pub type ItemId = String;
 pub type FlavorTextId = u64;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -58,6 +55,8 @@ pub struct ZoneAsset {
     pub examine: Option<String>,
     pub connections: HashMap<Direction, String>,
     pub mob_spawn_rate: f32,
+    // /// items in the zone that can be taken by the player
+    // pub items: Vec<ItemId>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Resource)]

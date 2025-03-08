@@ -1,6 +1,6 @@
 use crate::{
     PlayerMovement,
-    ui::update::UpdateMainSectionText,
+    ui::{LookTextBody, update::UpdateMainSectionText},
     zones::{Location, ZoneAsset, Zones},
 };
 use bevy::prelude::*;
@@ -11,6 +11,7 @@ pub fn handle_player_movement(
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     mut location: ResMut<Location>,
+    mut text_body: Query<&mut Text, With<LookTextBody>>,
 ) {
     let loc = location.0.clone();
 
@@ -27,6 +28,9 @@ pub fn handle_player_movement(
             };
             if zones.0.get(new_zone_asset_path).is_some() {
                 location.0 = new_zone_asset_path.to_owned();
+                _ = text_body
+                    .get_single_mut()
+                    .map(|mut text| text.0 = String::new());
             } else {
                 error!("{zones:?}.get({new_zone_asset_path})")
             }
@@ -43,11 +47,7 @@ pub fn set_main_body(
     location: Res<Location>,
     mut update_event: EventWriter<UpdateMainSectionText>,
 ) {
-    update_event.send(UpdateMainSectionText(
-        zone_assets
-            .get(zones.0.get(&location.0).unwrap())
-            .unwrap()
-            .description
-            .clone(),
-    ));
+    zone_assets
+        .get(zones.0.get(&location.0).unwrap())
+        .map(|zone_asset| update_event.send(UpdateMainSectionText(zone_asset.description.clone())));
 }

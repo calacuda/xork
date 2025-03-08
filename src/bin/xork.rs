@@ -11,6 +11,7 @@ use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
     CommandEntered, CommandResultEvent, Notification, PlayerLook, PlayerMovement, UiMessage,
     handle_game_cmd::handle_game_cmd,
+    handle_player_look::handle_player_look,
     handle_player_move::{handle_player_movement, set_main_body},
     mobs::{MobAsset, Mobs},
     state::{BattleWith, GameState},
@@ -87,6 +88,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             (
                 handle_game_cmd,
                 handle_player_movement,
+                handle_player_look,
                 set_main_body.after(handle_player_movement),
                 //         set_camera_viewports,
                 //         // ui_system,

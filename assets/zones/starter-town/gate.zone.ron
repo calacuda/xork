@@ -4,7 +4,7 @@
   // id: 0,
   description: "In front of you there is a tall wrought iron gate & knights checking identifications.",
   connections: {
-    North: "starter-town/gaurd-station.zone.ron",
+    North: "starter-town/guard-station.zone.ron",
     South: "starter-woods/01.zone.ron",
   }
 )

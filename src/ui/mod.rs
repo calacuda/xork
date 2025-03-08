@@ -13,7 +13,9 @@ use bevy_simple_text_input::{
 };
 use clap::Parser;
 use std::f32::consts::PI;
-use update::{UpdateMainSectionText, update_main_section};
+use update::{
+    UpdateLookSectionText, UpdateMainSectionText, update_look_section, update_main_section,
+};
 
 pub mod update;
 
@@ -31,6 +33,9 @@ pub struct MainTextUiNode;
 
 #[derive(Component)]
 pub struct MainTextBody;
+
+#[derive(Component)]
+pub struct LookTextBody;
 
 #[derive(Component)]
 pub struct CmdPrompt;
@@ -78,8 +83,17 @@ impl Plugin for TextUiPlugin {
             .add_event::<SlashCmd>()
             .add_event::<BadCommand>()
             .add_event::<UpdateMainSectionText>()
+            .add_event::<UpdateLookSectionText>()
             .add_systems(Startup, (camera_setup, spawn_cube))
-            .add_systems(Update, (rotate, set_camera_viewports, update_main_section))
+            .add_systems(
+                Update,
+                (
+                    rotate,
+                    set_camera_viewports,
+                    update_main_section,
+                    update_look_section,
+                ),
+            )
             .add_systems(Update, listener.after(TextInputSystem));
         // .add_systems(
         //     Update,
@@ -273,6 +287,25 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 },
                                 MainTextBody,
                             ));
+                            parent.spawn((
+                                // Text::new(format!("{i} -> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")),
+                                Text::default(),
+                                text_font.clone().with_font_size(30.0),
+                                TextLayout::new_with_justify(JustifyText::Left)
+                                    .with_linebreak(LineBreak::WordBoundary),
+                                TextColor(AMBER_500.into()),
+                                Node {
+                                    margin: UiRect {
+                                        left: Val::Percent(2.5),
+                                        right: Val::Percent(2.5),
+                                        top: Val::Percent(1.25),
+                                        bottom: Val::Percent(1.25),
+                                    },
+                                    ..Default::default()
+                                },
+                                LookTextBody,
+                            ));
+
                             // }
                         });
                     // Spawn Command Prompt
