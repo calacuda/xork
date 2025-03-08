@@ -1,6 +1,10 @@
-use crate::commands::{
-    BadCommand,
-    commands::{GameCmd, SlashCmd},
+use crate::{
+    commands::{
+        BadCommand,
+        commands::{GameCmd, SlashCmd},
+    },
+    handle_player_move::set_main_body,
+    state::MainState,
 };
 use bevy::{
     color::palettes::{css::GREEN, tailwind::AMBER_500},
@@ -84,7 +88,7 @@ impl Plugin for TextUiPlugin {
             .add_event::<BadCommand>()
             .add_event::<UpdateMainSectionText>()
             .add_event::<UpdateLookSectionText>()
-            .add_systems(Startup, (camera_setup, spawn_cube))
+            .add_systems(OnEnter(MainState::InGame), (camera_setup, spawn_cube))
             .add_systems(
                 Update,
                 (
@@ -92,9 +96,15 @@ impl Plugin for TextUiPlugin {
                     set_camera_viewports,
                     update_main_section,
                     update_look_section,
-                ),
+                )
+                    .run_if(in_state(MainState::InGame)),
             )
-            .add_systems(Update, listener.after(TextInputSystem));
+            .add_systems(
+                Update,
+                (listener, set_main_body)
+                    .after(TextInputSystem)
+                    .run_if(in_state(MainState::InGame)),
+            );
         // .add_systems(
         //     Update,
         //     (listener, update::update_tester).after(TextInputSystem),

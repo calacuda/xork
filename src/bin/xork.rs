@@ -9,12 +9,17 @@ use bevy_common_assets::ron::RonAssetPlugin;
 use bevy_simple_text_input::TextInputPlugin;
 use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
-    CommandEntered, CommandResultEvent, Notification, PlayerLook, PlayerMovement, UiMessage,
+    CommandEntered, CommandResultEvent, ExitGame, Notification, PlayerLook, PlayerMovement,
+    UiMessage,
+    commands::commands::SlashCmd,
+    enter_exit_state, enter_in_game_state, exit_game,
+    handle_exit_command::slash_exit,
     handle_game_cmd::handle_game_cmd,
     handle_player_look::handle_player_look,
-    handle_player_move::{handle_player_movement, set_main_body},
+    handle_player_move::handle_player_movement,
+    handle_slash_cmd::slash_cmd,
     mobs::{MobAsset, Mobs},
-    state::{BattleWith, GameState},
+    state::{BattleWith, GameState, MainState},
     ui::TextUiPlugin,
     zones::{Location, Zone, ZoneAsset, Zones},
 };
@@ -72,24 +77,35 @@ fn main() -> Result<(), Box<dyn Error>> {
             // Can be changed per mesh using the `WireframeColor` component.
             default_color: GREEN.into(),
         })
-        .init_state::<GameState>()
-        .init_state::<BattleWith>()
+        .init_state::<MainState>()
+        .add_sub_state::<GameState>()
+        .add_sub_state::<BattleWith>()
         .add_event::<CommandEntered>()
         .add_event::<UiMessage>()
         .add_event::<PlayerMovement>()
         .add_event::<PlayerLook>()
         .add_event::<Notification>()
         .add_event::<CommandResultEvent>()
+        .add_event::<ExitGame>()
+        .add_event::<SlashCmd>()
         .init_asset::<ZoneAsset>()
         .init_asset::<MobAsset>()
-        .add_systems(Startup, (load_zone_assets, load_mob_assets))
+        .add_systems(
+            OnEnter(MainState::InGame),
+            (load_zone_assets, load_mob_assets),
+        )
+        .add_systems(
+            Startup,
+            enter_in_game_state.run_if(not(in_state(MainState::InGame))),
+        )
         .add_systems(
             Update,
             (
                 handle_game_cmd,
+                slash_cmd,
                 handle_player_movement,
                 handle_player_look,
-                set_main_body.after(handle_player_movement),
+                slash_exit,
                 //         set_camera_viewports,
                 //         // ui_system,
                 //         // handle_events_system,
@@ -100,11 +116,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 //         // handle_chat,
                 //         // handle_send_zone,
                 //         // handle_send_sys_msg,
-            ),
+            )
+                .run_if(in_state(MainState::InGame)),
         )
-        // TODO: Write audio login systems
-        //
-        // .add_systems(OnEnter(ClientState::Login), (auto_login_msg_send, auto_login_msg_recv).in_state(Connected) )
+        .add_systems(OnEnter(MainState::Exit), exit_game)
+        .add_systems(Update, enter_exit_state.run_if(in_state(MainState::Wrapup)))
         .run();
 
     Ok(())

@@ -3,13 +3,16 @@ use bevy::prelude::*;
 use commands::commands::Direction;
 use fxhash::{FxHashMap, FxHashSet};
 use serde::{Deserialize, Serialize};
+use state::MainState;
 use std::time::Instant;
 use zones::{FlavorTextId, FlavorTextType};
 
 pub mod commands;
+pub mod handle_exit_command;
 pub mod handle_game_cmd;
 pub mod handle_player_look;
 pub mod handle_player_move;
+pub mod handle_slash_cmd;
 pub mod mobs;
 pub mod state;
 pub mod ui;
@@ -34,6 +37,9 @@ pub enum UiMessage {}
 
 #[derive(Event, Default)]
 pub struct PlayerLook;
+
+#[derive(Event, Default)]
+pub struct ExitGame;
 
 #[derive(Component, Clone, Debug)]
 pub enum NotificationLevel {
@@ -62,4 +68,16 @@ pub enum GenerincFlavorText {
         /// the ID of the flavor text to show.
         id: FlavorTextId,
     },
+}
+
+pub fn enter_in_game_state(mut next_state: ResMut<NextState<MainState>>) {
+    next_state.set(MainState::InGame);
+}
+
+pub fn exit_game(mut app_exit_events: EventWriter<AppExit>) {
+    app_exit_events.send(AppExit::Success);
+}
+
+pub fn enter_exit_state(mut next_state: ResMut<NextState<MainState>>) {
+    next_state.set(MainState::Exit);
 }

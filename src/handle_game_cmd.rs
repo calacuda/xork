@@ -15,8 +15,6 @@ pub fn handle_game_cmd(
                 player_move_ev.send(PlayerMovement(direction.clone()));
             }
             GameCmd::Look => {
-                // info!("player took a closer look at the the zone");
-
                 player_look_ev.send_default();
             }
             GameCmd::Take { thing } => {

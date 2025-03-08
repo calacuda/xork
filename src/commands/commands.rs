@@ -117,6 +117,8 @@ pub enum SlashCmd {
         // #[command(subcommand)]
         save_slot: u8,
     },
+    #[clap(name = "/exit")]
+    Exit {},
 }
 
 #[cfg(test)]
