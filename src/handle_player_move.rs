@@ -31,10 +31,15 @@ pub fn handle_player_movement(
                 _ = text_body
                     .get_single_mut()
                     .map(|mut text| text.0 = String::new());
+                debug!("player moved {:?}", ev.0);
             } else {
-                error!("{zones:?}.get({new_zone_asset_path})")
+                error!("player tried to move {:?}, but failed.", ev.0);
+                debug!("{zones:?}.get({new_zone_asset_path})")
             }
         } else {
+            error!(
+                "the player is at a location that is unknown to the engine. something went VERY wrong."
+            );
             error!("{zones:?}.get({loc})")
         }
     }

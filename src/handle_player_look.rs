@@ -24,9 +24,12 @@ pub fn handle_player_look(
 
             let look_text =
                 look_text.unwrap_or("You looked around and saw nothing else of interest...".into());
-
             look_event.send(UpdateLookSectionText(look_text));
+            debug!("player took a closer look at zone {loc:?}");
         } else {
+            error!(
+                "the player is at a location that is unknown to the engine. something went VERY wrong."
+            );
             error!("{zones:?}.get({loc})")
         }
     }

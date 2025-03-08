@@ -12,12 +12,10 @@ pub fn handle_game_cmd(
     for command in commands.read() {
         match command {
             GameCmd::Go { direction } => {
-                info!("player moved {direction:?}");
-
                 player_move_ev.send(PlayerMovement(direction.clone()));
             }
             GameCmd::Look => {
-                info!("player took a closer look at the the zone");
+                // info!("player took a closer look at the the zone");
 
                 player_look_ev.send_default();
             }
