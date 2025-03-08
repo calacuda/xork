@@ -9,14 +9,14 @@ use bevy_common_assets::ron::RonAssetPlugin;
 use bevy_simple_text_input::TextInputPlugin;
 use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
-    CommandEntered, CommandResultEvent, ExitGame, Notification, PlayerLook, PlayerMovement,
-    UiMessage,
+    CommandEntered, CommandResultEvent, ExitGame, NewZone, Notification, PlayerLook,
+    PlayerMovement, UiMessage,
     commands::commands::SlashCmd,
     enter_exit_state, enter_in_game_state, exit_game,
     handle_exit_command::slash_exit,
     handle_game_cmd::handle_game_cmd,
     handle_player_look::handle_player_look,
-    handle_player_move::handle_player_movement,
+    handle_player_move::{handle_player_movement, send_new_zone},
     handle_slash_cmd::slash_cmd,
     mobs::{MobAsset, Mobs},
     state::{BattleWith, GameState, MainState},
@@ -88,6 +88,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .add_event::<CommandResultEvent>()
         .add_event::<ExitGame>()
         .add_event::<SlashCmd>()
+        .add_event::<NewZone>()
         .init_asset::<ZoneAsset>()
         .init_asset::<MobAsset>()
         .add_systems(
@@ -106,21 +107,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 handle_player_movement,
                 handle_player_look,
                 slash_exit,
-                //         set_camera_viewports,
-                //         // ui_system,
-                //         // handle_events_system,
-                //         // handle_player_movement,
-                //         // handle_player_look,
-                //         // handle_game_cmd,
-                //         // handle_cmd_res,
-                //         // handle_chat,
-                //         // handle_send_zone,
-                //         // handle_send_sys_msg,
             )
                 .run_if(in_state(MainState::InGame)),
         )
-        .add_systems(OnEnter(MainState::Exit), exit_game)
+        .add_systems(Update, send_new_zone.run_if(in_state(GameState::Startup)))
         .add_systems(Update, enter_exit_state.run_if(in_state(MainState::Wrapup)))
+        .add_systems(OnEnter(MainState::Exit), exit_game)
         .run();
 
     Ok(())

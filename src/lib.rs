@@ -41,6 +41,9 @@ pub struct PlayerLook;
 #[derive(Event, Default)]
 pub struct ExitGame;
 
+#[derive(Event, Default)]
+pub struct NewZone;
+
 #[derive(Component, Clone, Debug)]
 pub enum NotificationLevel {
     Error,
