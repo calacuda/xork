@@ -1,3 +1,7 @@
+use crate::commands::{
+    BadCommand,
+    commands::{GameCmd, SlashCmd},
+};
 use bevy::{
     color::palettes::{css::GREEN, tailwind::AMBER_500},
     prelude::*,
@@ -9,11 +13,9 @@ use bevy_simple_text_input::{
 };
 use clap::Parser;
 use std::f32::consts::PI;
+use update::{UpdateMainSectionText, update_main_section};
 
-use crate::commands::{
-    BadCommand,
-    commands::{GameCmd, SlashCmd},
-};
+pub mod update;
 
 #[derive(Component)]
 pub struct UiCamera;
@@ -75,9 +77,14 @@ impl Plugin for TextUiPlugin {
         app.add_event::<GameCmd>()
             .add_event::<SlashCmd>()
             .add_event::<BadCommand>()
+            .add_event::<UpdateMainSectionText>()
             .add_systems(Startup, (camera_setup, spawn_cube))
-            .add_systems(Update, (rotate, set_camera_viewports))
+            .add_systems(Update, (rotate, set_camera_viewports, update_main_section))
             .add_systems(Update, listener.after(TextInputSystem));
+        // .add_systems(
+        //     Update,
+        //     (listener, update::update_tester).after(TextInputSystem),
+        // );
     }
 }
 
@@ -205,7 +212,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     parent
                         .spawn((
                             // Text::new("Use the panel on the right to change the Display and Visibility properties for the respective nodes of the panel on the left"),
-                            TextSpan::default(),
+                            // TextSpan::default(),
                             // text_font.clone().with_font_size(30.0),
                             // TextLayout::new_with_justify(JustifyText::Left),
                             Node {
@@ -233,7 +240,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 offset: Val::Px(0.0),
                                 color: GREEN.into(),
                             },
-                            MainTextBody,
+                            // MainTextBody,
                         ))
                         .with_children(|parent| {
                             // parent.spawn((

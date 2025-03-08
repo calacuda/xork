@@ -10,10 +10,12 @@ use bevy_simple_text_input::TextInputPlugin;
 use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
     CommandEntered, CommandResultEvent, Notification, PlayerLook, PlayerMovement, UiMessage,
+    handle_game_cmd::handle_game_cmd,
+    handle_player_move::{handle_player_movement, set_main_body},
     mobs::{MobAsset, Mobs},
     state::{BattleWith, GameState},
-    ui::{TextUiPlugin, set_camera_viewports},
-    zones::{Zone, ZoneAsset, Zones},
+    ui::TextUiPlugin,
+    zones::{Location, Zone, ZoneAsset, Zones},
 };
 
 #[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -56,6 +58,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ))
         .insert_resource(Zones::default())
         .insert_resource(Mobs::default())
+        .insert_resource(Location("starter-town/gate.zone.ron".into()))
         // .configure_sets(Update, Adventure.run_if(in_state(GameState::Adventure)))
         // .configure_sets(Update, InGame.run_if(not(in_state(GameState::Startup))))
         .init_resource::<Zone>()
@@ -79,21 +82,24 @@ fn main() -> Result<(), Box<dyn Error>> {
         .init_asset::<ZoneAsset>()
         .init_asset::<MobAsset>()
         .add_systems(Startup, (load_zone_assets, load_mob_assets))
-        // .add_systems(
-        //     Update,
-        //     (
-        //         set_camera_viewports,
-        //         // ui_system,
-        //         // handle_events_system,
-        //         // handle_player_movement,
-        //         // handle_player_look,
-        //         // handle_game_cmd,
-        //         // handle_cmd_res,
-        //         // handle_chat,
-        //         // handle_send_zone,
-        //         // handle_send_sys_msg,
-        //     ),
-        // )
+        .add_systems(
+            Update,
+            (
+                handle_game_cmd,
+                handle_player_movement,
+                set_main_body.after(handle_player_movement),
+                //         set_camera_viewports,
+                //         // ui_system,
+                //         // handle_events_system,
+                //         // handle_player_movement,
+                //         // handle_player_look,
+                //         // handle_game_cmd,
+                //         // handle_cmd_res,
+                //         // handle_chat,
+                //         // handle_send_zone,
+                //         // handle_send_sys_msg,
+            ),
+        )
         // TODO: Write audio login systems
         //
         // .add_systems(OnEnter(ClientState::Login), (auto_login_msg_send, auto_login_msg_recv).in_state(Connected) )

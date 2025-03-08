@@ -60,5 +60,8 @@ pub struct ZoneAsset {
     pub mob_spawn_rate: f32,
 }
 
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Resource)]
+pub struct Location(pub ZoneId);
+
 #[derive(Debug, Clone, Default, Resource)]
-pub struct Zones(pub HashMap<String, Handle<ZoneAsset>>);
+pub struct Zones(pub HashMap<ZoneId, Handle<ZoneAsset>>);

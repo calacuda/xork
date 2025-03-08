@@ -7,6 +7,8 @@ use std::time::Instant;
 use zones::{FlavorTextId, FlavorTextType};
 
 pub mod commands;
+pub mod handle_game_cmd;
+pub mod handle_player_move;
 pub mod mobs;
 pub mod state;
 pub mod ui;
@@ -29,8 +31,8 @@ pub struct PlayerMovement(pub Direction);
 #[derive(Event)]
 pub enum UiMessage {}
 
-#[derive(Event)]
-pub struct PlayerLook();
+#[derive(Event, Default)]
+pub struct PlayerLook;
 
 #[derive(Component, Clone, Debug)]
 pub enum NotificationLevel {
