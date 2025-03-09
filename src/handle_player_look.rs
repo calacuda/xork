@@ -5,7 +5,7 @@ use crate::{
 };
 use bevy::prelude::*;
 
-/// moves players from zone to zone
+/// displays more information to the player.
 pub fn handle_player_look(
     mut player_move_events: EventReader<PlayerLook>,
     mut look_event: EventWriter<UpdateLookSectionText>,

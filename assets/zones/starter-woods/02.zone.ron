@@ -5,5 +5,8 @@
   examine: Some("Looking at the ground closely you can see more blood, some goblin foot prints, and a goblin club."),
   connections: {
     East: "starter-woods/01.zone.ron",
-  }
+  },
+  items: [
+    "items/goblin-club.item.ron"
+  ]
 )

@@ -6,5 +6,6 @@
   examine: Some("The guard is wearing a name plate that says \"Knight of the Republic; Sir. Swaresa lot\""),
   connections: {
     South: "starter-town/gate.zone.ron"
-  }
+  },
+  items: []
 )

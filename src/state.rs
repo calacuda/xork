@@ -17,7 +17,7 @@ pub enum MainState {
 #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, SubStates)]
 #[source(MainState = MainState::InGame)]
 pub enum GameState {
-    /// sets up the client to get ready to login
+    /// waits for assets to load, etc.
     #[default]
     Startup,
     /// used when in the over world
@@ -51,10 +51,10 @@ pub enum BattleWith {
     /// set when the player encounters & agros a mob.
     #[default]
     Mob,
-    /// set when the player is battleing another player.
-    Player,
-    /// set when the player's party is duling another party.
-    Party,
+    // /// set when the player is battleing another player.
+    // Player,
+    // /// set when the player's party is duling another party.
+    // Party,
 }
 
 #[derive(
@@ -72,11 +72,18 @@ pub enum BattleWith {
     SubStates,
 )]
 #[source(GameState = GameState::StatScreen)]
-pub enum StatScreen {
-    /// TODO: make a substate for this for the different inventory windows, consumable,
-    /// equipment, weapons, etc.
+pub enum MainScreenState {
+    // TODO: make a substate for this for the different inventory windows, consumable,
+    // equipment, weapons, etc.
     Inventory,
+    /// default view, used for when the player is NOT in a specialized menu.
     #[default]
+    MainGame,
+    /// view spells.
     Spells,
+    /// viewing of the players stats.
     PlayerStats,
+    /// view currently active quests, descriptions, & objectives.
+    Quests,
+    NotificationHistory,
 }

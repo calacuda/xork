@@ -1,0 +1,14 @@
+(
+  name: "Goblin Club",
+  description: "bonky bonky, wacky wacky",
+  item_data: Weapon (
+    hands: MainHand,
+    effects: [
+      BufUser (
+        stat: Attack,
+        amount: Percent ( 0.025 ),
+        duration: 0.0,
+      )
+    ]
+  )
+)

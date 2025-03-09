@@ -327,7 +327,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             // Text::new("> "),
                             // Text::new("MOCK-CMD"),
                             // TextSpan::new(["> ", "MOCK-CMD"]),
-                            TextSpan::default(),
+                            // TextSpan::default(),
                             // text_font.clone().with_font_size(60.0),
                             // TextLayout::new_with_justify(JustifyText::Left),
                             Node {

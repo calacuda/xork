@@ -10,7 +10,7 @@ use bevy_simple_text_input::TextInputPlugin;
 use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
     CommandEntered, CommandResultEvent, ExitGame, NewZone, Notification, PlayerLook,
-    PlayerMovement, UiMessage,
+    PlayerMovement, PlayerTake, UiMessage,
     commands::commands::SlashCmd,
     enter_exit_state, enter_in_game_state, exit_game,
     handle_exit_command::slash_exit,
@@ -18,10 +18,12 @@ use xork::{
     handle_player_look::handle_player_look,
     handle_player_move::{handle_player_movement, send_new_zone},
     handle_slash_cmd::slash_cmd,
+    items::{ItemAsset, Items},
     mobs::{MobAsset, Mobs},
-    state::{BattleWith, GameState, MainState},
+    player_take::handle_player_take,
+    state::{BattleWith, GameState, MainScreenState, MainState},
     ui::TextUiPlugin,
-    zones::{Location, Zone, ZoneAsset, Zones},
+    zones::{Location, ZoneAsset, Zones},
 };
 
 #[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -57,6 +59,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }),
             RonAssetPlugin::<ZoneAsset>::new(&["zone.ron"]),
             RonAssetPlugin::<MobAsset>::new(&["mob.ron"]),
+            RonAssetPlugin::<ItemAsset>::new(&["item.ron"]),
             TextUiPlugin,
             WireframePlugin,
             TextInputPlugin,
@@ -64,10 +67,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         ))
         .insert_resource(Zones::default())
         .insert_resource(Mobs::default())
+        .insert_resource(Items::default())
         .insert_resource(Location("starter-town/gate.zone.ron".into()))
         // .configure_sets(Update, Adventure.run_if(in_state(GameState::Adventure)))
         // .configure_sets(Update, InGame.run_if(not(in_state(GameState::Startup))))
-        .init_resource::<Zone>()
+        // .init_resource::<Zone>()
         .insert_resource(WireframeConfig {
             // The global wireframe config enables drawing of wireframes on every mesh,
             // except those with `NoWireframe`. Meshes with `Wireframe` will always have a wireframe,
@@ -79,7 +83,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         })
         .init_state::<MainState>()
         .add_sub_state::<GameState>()
-        .add_sub_state::<BattleWith>()
+        .add_sub_state::<MainScreenState>()
         .add_event::<CommandEntered>()
         .add_event::<UiMessage>()
         .add_event::<PlayerMovement>()
@@ -89,11 +93,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         .add_event::<ExitGame>()
         .add_event::<SlashCmd>()
         .add_event::<NewZone>()
+        .add_event::<PlayerTake>()
         .init_asset::<ZoneAsset>()
         .init_asset::<MobAsset>()
         .add_systems(
             OnEnter(MainState::InGame),
-            (load_zone_assets, load_mob_assets),
+            (load_zone_assets, load_mob_assets, load_item_assets),
         )
         .add_systems(
             Startup,
@@ -106,6 +111,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 slash_cmd,
                 handle_player_movement,
                 handle_player_look,
+                handle_player_take,
                 slash_exit,
             )
                 .run_if(in_state(MainState::InGame)),
@@ -155,6 +161,18 @@ fn load_mob_assets(mut mobs: ResMut<Mobs>, asset_server: Res<AssetServer>) {
             let path = format!("mobs/{}", asset.file_name().to_str().unwrap());
             info!("{path}");
             mobs.0.insert(path.clone(), asset_server.load(path));
+        }
+    });
+}
+
+fn load_item_assets(mut items: ResMut<Items>, asset_server: Res<AssetServer>) {
+    let to_assets = PathBuf::from("assets/items");
+
+    read_dir(to_assets).unwrap().for_each(|asset| {
+        if let Ok(asset) = asset {
+            let path = format!("items/{}", asset.file_name().to_str().unwrap());
+            info!("{path}");
+            items.0.insert(path.clone(), asset_server.load(path));
         }
     });
 }

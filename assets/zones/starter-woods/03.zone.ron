@@ -5,5 +5,6 @@
   examine: Some("Looking at the ground closely you can see some more goblin foot prints. You also observe drag marks, almost as if the goblins were dragging a dead goblin back to their den."),
   connections: {
     NorthWest: "starter-woods/01.zone.ron",
-  }
+  },
+  items: []
 )

@@ -13,7 +13,9 @@ pub mod handle_game_cmd;
 pub mod handle_player_look;
 pub mod handle_player_move;
 pub mod handle_slash_cmd;
+pub mod items;
 pub mod mobs;
+pub mod player_take;
 pub mod state;
 pub mod ui;
 pub mod zones;
@@ -43,6 +45,9 @@ pub struct ExitGame;
 
 #[derive(Event, Default)]
 pub struct NewZone;
+
+#[derive(Event, Default)]
+pub struct PlayerTake;
 
 #[derive(Component, Clone, Debug)]
 pub enum NotificationLevel {

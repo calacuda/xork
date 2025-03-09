@@ -78,16 +78,24 @@ pub enum GameCmd {
         #[command(subcommand)]
         direction: Direction,
     },
-    #[serde(rename = "look", alias = "examine", alias = "observe")]
-    #[clap(alias = "examine", alias = "observe")]
+    #[serde(
+        rename = "look",
+        alias = "examine",
+        alias = "observe",
+        alias = "behold"
+    )]
+    #[clap(alias = "examine", alias = "observe", alias = "behold")]
     Look,
     #[serde(rename = "take", alias = "pick-up", alias = "yoink")]
     #[clap(alias = "pick-up", alias = "yoink")]
-    // #[command(action = ArgActions::Collect)]
     Take {
-        #[arg(action = ArgAction::Append, required = true, value_delimiter = ' ', num_args = 1.., use_value_delimiter = true)]
-        thing: Vec<String>,
+        // #[arg(action = ArgAction::Append, required = true, value_delimiter = ' ', num_args = 1.., use_value_delimiter = true)]
+        // thing: Vec<String>,
     },
+    /// lists item in the inventory
+    #[serde(rename = "inventory", alias = "list", alias = "ls")]
+    #[clap(alias = "inv", alias = "list", alias = "ls")]
+    Inventory {},
     // TODO: make a "map" command that allow the player to check a mini map.
 }
 

@@ -6,5 +6,6 @@
   connections: {
     North: "starter-town/guard-station.zone.ron",
     South: "starter-woods/01.zone.ron",
-  }
+  },
+  items: []
 )

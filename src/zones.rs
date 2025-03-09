@@ -1,46 +1,44 @@
-use crate::HashMap;
+use super::commands::commands::Direction;
+use crate::{HashMap, items::ItemId};
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use super::commands::commands::Direction;
-
 pub type ZoneId = String;
-pub type ItemId = String;
 pub type FlavorTextId = u64;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FlavorTextType {
     Help,
-    ZoneDescription,
-    ZoneInspection,
+    // ZoneDescription,
+    // ZoneInspection,
     ItemDescription,
     SpellDescription,
     // ItemDescription,
     // ItemDescription,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Event)]
-pub struct ZoneBuilder {
-    /// self explanatory (many zones my have the same name)
-    pub name: String,
-    /// used for idetification purposes (not displayed to the user)
-    pub id: ZoneId,
-    /// which flavor text to use for the zone
-    pub description: (FlavorTextType, FlavorTextId),
-}
+// #[derive(Debug, Serialize, Deserialize, Clone, Event)]
+// pub struct ZoneBuilder {
+//     /// self explanatory (many zones my have the same name)
+//     pub name: String,
+//     /// used for idetification purposes (not displayed to the user)
+//     pub id: ZoneId,
+//     /// which flavor text to use for the zone
+//     pub description: (FlavorTextType, FlavorTextId),
+// }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize, Resource)]
-pub struct Zone {
-    /// self explanatory (many zones my have the same name)
-    pub name: String,
-    // /// used for idetification purposes (not displayed to the user)
-    // pub id: ZoneId,
-    /// flavor text that describes the zone
-    pub description: String,
-    /// the "look" text is none by default, gets set when the player uses the "look" command and
-    /// the server response
-    pub examine: Option<String>,
-}
+// #[derive(Debug, Clone, Default, Serialize, Deserialize, Resource)]
+// pub struct Zone {
+//     /// self explanatory (many zones my have the same name)
+//     pub name: String,
+//     // /// used for idetification purposes (not displayed to the user)
+//     // pub id: ZoneId,
+//     /// flavor text that describes the zone
+//     pub description: String,
+//     /// the "look" text is none by default, gets set when the player uses the "look" command and
+//     /// the server response
+//     pub examine: Option<String>,
+// }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Asset, TypePath)]
 pub struct ZoneAsset {
@@ -55,8 +53,8 @@ pub struct ZoneAsset {
     pub examine: Option<String>,
     pub connections: HashMap<Direction, String>,
     pub mob_spawn_rate: f32,
-    // /// items in the zone that can be taken by the player
-    // pub items: Vec<ItemId>,
+    /// items in the zone that can be taken by the player
+    pub items: Vec<ItemId>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Resource)]

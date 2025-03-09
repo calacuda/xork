@@ -7,5 +7,6 @@
     North: "starter-town/gate.zone.ron",
     West: "starter-woods/02.zone.ron",
     SouthEast: "starter-woods/03.zone.ron",
-  }
+  },
+  items: []
 )
