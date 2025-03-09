@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, States)]
@@ -71,10 +72,8 @@ pub enum BattleWith {
     Deserialize,
     SubStates,
 )]
-#[source(GameState = GameState::StatScreen)]
+#[source(MainState = MainState::InGame)]
 pub enum MainScreenState {
-    // TODO: make a substate for this for the different inventory windows, consumable,
-    // equipment, weapons, etc.
     Inventory,
     /// default view, used for when the player is NOT in a specialized menu.
     #[default]
@@ -86,4 +85,39 @@ pub enum MainScreenState {
     /// view currently active quests, descriptions, & objectives.
     Quests,
     NotificationHistory,
+}
+
+#[derive(
+    Clone,
+    Copy,
+    Default,
+    Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    SubStates,
+    ValueEnum,
+)]
+#[source(MainScreenState = MainScreenState::Inventory)]
+pub enum InventoryState {
+    #[default]
+    #[serde(rename = "all", alias = "a", alias = "*")]
+    #[clap(alias = "all", alias = "a", alias = "*")]
+    All,
+    #[serde(rename = "consumables", alias = "c")]
+    #[clap(alias = "consumables", alias = "c")]
+    Consumables,
+    #[serde(rename = "equipment", alias = "equip")]
+    #[clap(alias = "equipment", alias = "equip")]
+    Equipment,
+    #[serde(rename = "weapons", alias = "w")]
+    #[clap(alias = "weapons", alias = "w")]
+    Weapons,
+    #[serde(rename = "key-items", alias = "keys")]
+    #[clap(alias = "key-items", alias = "keys")]
+    KeyItems,
 }

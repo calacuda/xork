@@ -1,6 +1,6 @@
 #![feature(let_chains)]
-use bevy::prelude::*;
-use commands::commands::Direction;
+use bevy::{prelude::*, window::WindowResized};
+use commands::commands::{Direction, ViewScreen};
 use fxhash::{FxHashMap, FxHashSet};
 use serde::{Deserialize, Serialize};
 use state::MainState;
@@ -14,6 +14,7 @@ pub mod handle_player_look;
 pub mod handle_player_move;
 pub mod handle_slash_cmd;
 pub mod items;
+pub mod menu_screens;
 pub mod mobs;
 pub mod player_take;
 pub mod state;
@@ -49,6 +50,11 @@ pub struct NewZone;
 #[derive(Event, Default)]
 pub struct PlayerTake;
 
+#[derive(Event)]
+pub struct ChangeScreen {
+    to_screen: ViewScreen,
+}
+
 #[derive(Component, Clone, Debug)]
 pub enum NotificationLevel {
     Error,
@@ -78,6 +84,9 @@ pub enum GenerincFlavorText {
     },
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Resource)]
+pub struct WindowSize(pub Vec2);
+
 pub fn enter_in_game_state(mut next_state: ResMut<NextState<MainState>>) {
     next_state.set(MainState::InGame);
 }
@@ -88,4 +97,16 @@ pub fn exit_game(mut app_exit_events: EventWriter<AppExit>) {
 
 pub fn enter_exit_state(mut next_state: ResMut<NextState<MainState>>) {
     next_state.set(MainState::Exit);
+}
+
+pub fn maintain_window_size(
+    windows: Query<&Window>,
+    mut resize_events: EventReader<WindowResized>,
+    mut window_size: ResMut<WindowSize>,
+    // mut camera: Query<&mut Camera, With<VisualizationCamera>>,
+) {
+    for resize_event in resize_events.read() {
+        let window = windows.get(resize_event.window).unwrap();
+        window_size.0 = window.size();
+    }
 }

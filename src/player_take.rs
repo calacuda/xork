@@ -12,6 +12,7 @@ pub fn handle_player_take(
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     location: Res<Location>,
+    mut asset_server: ResMut<AssetServer>,
 ) {
     let loc = location.0.clone();
 

@@ -9,8 +9,8 @@ use bevy_common_assets::ron::RonAssetPlugin;
 use bevy_simple_text_input::TextInputPlugin;
 use std::{error::Error, fs::read_dir, path::PathBuf};
 use xork::{
-    CommandEntered, CommandResultEvent, ExitGame, NewZone, Notification, PlayerLook,
-    PlayerMovement, PlayerTake, UiMessage,
+    ChangeScreen, CommandEntered, CommandResultEvent, ExitGame, NewZone, Notification, PlayerLook,
+    PlayerMovement, PlayerTake, UiMessage, WindowSize,
     commands::commands::SlashCmd,
     enter_exit_state, enter_in_game_state, exit_game,
     handle_exit_command::slash_exit,
@@ -19,9 +19,10 @@ use xork::{
     handle_player_move::{handle_player_movement, send_new_zone},
     handle_slash_cmd::slash_cmd,
     items::{ItemAsset, Items},
+    maintain_window_size,
     mobs::{MobAsset, Mobs},
     player_take::handle_player_take,
-    state::{BattleWith, GameState, MainScreenState, MainState},
+    state::{GameState, InventoryState, MainScreenState, MainState},
     ui::TextUiPlugin,
     zones::{Location, ZoneAsset, Zones},
 };
@@ -63,6 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             TextUiPlugin,
             WireframePlugin,
             TextInputPlugin,
+            // MenuScreensPlugin,
             // Wireframe2dPlugin,
         ))
         .insert_resource(Zones::default())
@@ -81,9 +83,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             // Can be changed per mesh using the `WireframeColor` component.
             default_color: GREEN.into(),
         })
+        .insert_resource(WindowSize(Vec2 { x: 0.0, y: 0.0 }))
         .init_state::<MainState>()
         .add_sub_state::<GameState>()
         .add_sub_state::<MainScreenState>()
+        .add_sub_state::<InventoryState>()
         .add_event::<CommandEntered>()
         .add_event::<UiMessage>()
         .add_event::<PlayerMovement>()
@@ -94,6 +98,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .add_event::<SlashCmd>()
         .add_event::<NewZone>()
         .add_event::<PlayerTake>()
+        .add_event::<ChangeScreen>()
         .init_asset::<ZoneAsset>()
         .init_asset::<MobAsset>()
         .add_systems(
@@ -118,6 +123,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
         .add_systems(Update, send_new_zone.run_if(in_state(GameState::Startup)))
         .add_systems(Update, enter_exit_state.run_if(in_state(MainState::Wrapup)))
+        .add_systems(Update, maintain_window_size)
         .add_systems(OnEnter(MainState::Exit), exit_game)
         .run();
 

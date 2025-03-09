@@ -3,6 +3,8 @@ use clap::{ArgAction, Parser};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumDiscriminants, EnumString};
 
+use crate::state::InventoryState;
+
 #[derive(Debug, Clone, Serialize, Deserialize, Parser, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Direction {
     #[arg()]
@@ -38,11 +40,37 @@ pub enum Direction {
     In { place: String },
 }
 
-#[derive(Parser)]
-#[command(version, about, long_about = None)]
-struct GameCommand {
-    #[command(subcommand)]
-    cmd: GameCmd,
+// #[derive(Parser)]
+// #[command(version, about, long_about = None)]
+// struct GameCommand {
+//     #[command(subcommand)]
+//     cmd: GameCmd,
+// }
+
+#[derive(Debug, Clone, Serialize, Deserialize, Parser, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ViewScreen {
+    #[serde(rename = "game", alias = "main")]
+    #[clap(name = "game", alias = "main")]
+    Game,
+    /// view specififc inventory screen
+    #[serde(rename = "inventory", alias = "inv")]
+    #[clap(name = "inventory", alias = "inv")]
+    Inventory {
+        #[arg(required = false)]
+        sub_screen: Option<InventoryState>,
+    },
+    #[serde(rename = "spells")]
+    #[clap(name = "spells")]
+    Spells,
+    #[serde(rename = "stats")]
+    #[clap(name = "stats")]
+    Stats,
+    #[serde(rename = "quests")]
+    #[clap(name = "quests")]
+    Quests,
+    #[serde(rename = "notifications", alias = "notifs")]
+    #[clap(name = "notifications", alias = "notifs")]
+    Notifications,
 }
 
 #[derive(
@@ -125,8 +153,13 @@ pub enum SlashCmd {
         // #[command(subcommand)]
         save_slot: u8,
     },
-    #[clap(name = "/exit")]
+    #[clap(name = "/exit", alias = "/e", alias = "/quit", alias = "/q")]
     Exit {},
+    #[clap(name = "/view", alias = "/v")]
+    View {
+        #[command(subcommand)]
+        screen: ViewScreen,
+    },
 }
 
 #[cfg(test)]
