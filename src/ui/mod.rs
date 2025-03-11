@@ -105,10 +105,6 @@ impl Plugin for TextUiPlugin {
                     .run_if(in_state(MainState::InGame))
                     .run_if(not(in_state(GameState::Startup))),
             );
-        // .add_systems(
-        //     Update,
-        //     (listener, update::update_tester).after(TextInputSystem),
-        // );
     }
 }
 
@@ -233,92 +229,38 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     // BackgroundColor(Color::BLACK),
                 ))
                 .with_children(|parent| {
-                    parent
-                        .spawn((
-                            // Text::new("Use the panel on the right to change the Display and Visibility properties for the respective nodes of the panel on the left"),
-                            // TextSpan::default(),
-                            // text_font.clone().with_font_size(30.0),
-                            // TextLayout::new_with_justify(JustifyText::Left),
-                            Node {
-                                height: Val::Percent((8.0 / 9.0) * (100.0 - 7.5)),
-                                // max_height: Val::Percent((8.0 / 9.0) * 100.0 - 5.0),
-                                // width: Val::Percent(100.),
-                                // height: Val::Percent(100.),
-                                // margin: UiRect::bottom(Val::Px(10.)),
-                                // margin: UiRect::bottom(Val::Percent(())),
-                                // justify_content: JustifyContent::FlexStart,
-                                flex_direction: FlexDirection::Column,
-                                // margin: UiRect {
-                                //     left: Val::Px(0.0),
-                                //     right: Val::Px(0.0),
-                                //     top: Val::Px(0.0),
-                                //     bottom: Val::Px(0.0),
-                                // },
-                                overflow: Overflow::clip_y(),
-                                ..Default::default()
-                            },
-                            // BackgroundColor(Color::BLACK),
-                            // BorderColor(Color::WHITE),
-                            Outline {
-                                width: Val::Px(5.),
-                                offset: Val::Px(0.0),
-                                color: GREEN.into(),
-                            },
-                            MainTextUiNode,
-                        ))
-                    //     .with_children(|parent| {
-                    //         // parent.spawn((
-                    //         //     Text::new("Use the panel on the right to change the Display and Visibility properties for the respective nodes of the panel on the left"),
-                    //         //     text_font.clone().with_font_size(30.0),
-                    //         //     TextLayout::new_with_justify(JustifyText::Left),
-                    //         // ));
-                    //
-                    //         // parent.spawn((
-                    //         //     Text::new("Use the panel on the right to change the Display and Visibility properties for the respective nodes of the panel on the left"),
-                    //         //     text_font.clone().with_font_size(45.0),
-                    //         //     TextLayout::new_with_justify(JustifyText::Left),
-                    //         // ));
-                    //         // for i in 0..10 {
-                    //         parent.spawn((
-                    //             // Text::new(format!("{i} -> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")),
-                    //             Text::default(),
-                    //             text_font.clone().with_font_size(30.0),
-                    //             TextLayout::new_with_justify(JustifyText::Left)
-                    //                 .with_linebreak(LineBreak::WordBoundary),
-                    //             TextColor(AMBER_500.into()),
-                    //             Node {
-                    //                 margin: UiRect {
-                    //                     left: Val::Percent(2.5),
-                    //                     right: Val::Percent(2.5),
-                    //                     top: Val::Percent(1.25),
-                    //                     bottom: Val::Percent(1.25),
-                    //                 },
-                    //                 ..Default::default()
-                    //             },
-                    //             MainTextBody,
-                    //         ));
-                    //         parent.spawn((
-                    //             // Text::new(format!("{i} -> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")),
-                    //             Text::default(),
-                    //             text_font.clone().with_font_size(30.0),
-                    //             TextLayout::new_with_justify(JustifyText::Left)
-                    //                 .with_linebreak(LineBreak::WordBoundary),
-                    //             TextColor(AMBER_500.into()),
-                    //             Node {
-                    //                 margin: UiRect {
-                    //                     left: Val::Percent(2.5),
-                    //                     right: Val::Percent(2.5),
-                    //                     top: Val::Percent(1.25),
-                    //                     bottom: Val::Percent(1.25),
-                    //                 },
-                    //                 ..Default::default()
-                    //             },
-                    //             LookTextBody,
-                    //         ));
-                    //
-                    //         // }
-                    //     });
-                    ;
+                    parent.spawn((
+                        // Text::new("Use the panel on the right to change the Display and Visibility properties for the respective nodes of the panel on the left"),
+                        // TextSpan::default(),
+                        // text_font.clone().with_font_size(30.0),
+                        // TextLayout::new_with_justify(JustifyText::Left),
+                        Node {
+                            height: Val::Percent((8.0 / 9.0) * (100.0 - 7.5)),
+                            // max_height: Val::Percent((8.0 / 9.0) * 100.0 - 5.0),
+                            // width: Val::Percent(100.),
+                            // height: Val::Percent(100.),
+                            // margin: UiRect::bottom(Val::Px(10.)),
+                            // margin: UiRect::bottom(Val::Percent(())),
+                            // justify_content: JustifyContent::FlexStart,
+                            flex_direction: FlexDirection::Column,
+                            // margin: UiRect {
+                            //     left: Val::Px(0.0),
+                            //     right: Val::Px(0.0),
+                            //     top: Val::Px(0.0),
+                            //     bottom: Val::Px(0.0),
+                            // },
+                            overflow: Overflow::clip_y(),
+                            ..Default::default()
+                        },
+                        // BackgroundColor(Color::BLACK),
+                        // BorderColor(Color::WHITE),
+                        Outline {
+                            width: Val::Px(5.),
+                            offset: Val::Px(0.0),
+                            color: GREEN.into(),
+                        },
+                        MainTextUiNode,
+                    ));
                     // Spawn Command Prompt
                     parent
                         .spawn((

@@ -30,10 +30,9 @@ pub fn handle_game_cmd(
             // }
             GameCmd::Take {} => {
                 player_take_ev.send_default();
-            }
-            GameCmd::Inventory {} => {
-                warn!("list all inventory items")
-            }
+            } // GameCmd::Inventory {} => {
+              //     warn!("list all inventory items")
+              // }
         }
     }
 }

@@ -1,9 +1,8 @@
+use crate::state::InventoryState;
 use bevy::prelude::*;
-use clap::{ArgAction, Parser};
+use clap::Parser;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumDiscriminants, EnumString};
-
-use crate::state::InventoryState;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Parser, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Direction {
@@ -100,30 +99,30 @@ pub enum ViewScreen {
 pub enum GameCmd {
     // #[serde(rename = "help")]
     // Help { query: Option<Box<ClientGameCmd>> },
-    #[strum_discriminants(serde(rename = "go", alias = "move", alias = "walk"))]
-    #[clap(alias = "move", alias = "walk")]
+    #[strum_discriminants(serde(rename = "go", alias = "move", alias = "walk", alias = "g"))]
+    #[strum_discriminants(clap(alias = "move", alias = "walk", alias = "g"))]
     Go {
         #[command(subcommand)]
         direction: Direction,
     },
-    #[serde(
+    #[strum_discriminants(serde(
         rename = "look",
         alias = "examine",
         alias = "observe",
         alias = "behold"
-    )]
-    #[clap(alias = "examine", alias = "observe", alias = "behold")]
+    ))]
+    #[strum_discriminants(clap(alias = "examine", alias = "observe", alias = "behold"))]
     Look,
-    #[serde(rename = "take", alias = "pick-up", alias = "yoink")]
-    #[clap(alias = "pick-up", alias = "yoink")]
+    #[strum_discriminants(serde(rename = "take", alias = "pick-up", alias = "yoink"))]
+    #[strum_discriminants(clap(alias = "pick-up", alias = "yoink"))]
     Take {
         // #[arg(action = ArgAction::Append, required = true, value_delimiter = ' ', num_args = 1.., use_value_delimiter = true)]
         // thing: Vec<String>,
     },
-    /// lists item in the inventory
-    #[serde(rename = "inventory", alias = "list", alias = "ls")]
-    #[clap(alias = "inv", alias = "list", alias = "ls")]
-    Inventory {},
+    // /// lists item in the inventory
+    // #[serde(rename = "inventory", alias = "list", alias = "ls")]
+    // #[clap(alias = "inv", alias = "list", alias = "ls")]
+    // Inventory {},
     // TODO: make a "map" command that allow the player to check a mini map.
 }
 
@@ -141,7 +140,7 @@ pub enum SlashCmd {
     //     #[arg(action = ArgAction::Append, required = true)]
     //     message: Vec<String>,
     // },
-    #[clap(name = "/help", alias = "/?")]
+    #[clap(name = "/help", alias = "/?", alias = "/h")]
     Help {
         // #[arg(required = true)]
         #[command(subcommand)]
@@ -164,7 +163,7 @@ pub enum SlashCmd {
 
 #[cfg(test)]
 mod test {
-    use super::{GameCmd, GameCmdName, SlashCmd};
+    use super::{Direction, GameCmd, GameCmdName, SlashCmd};
     use clap::Parser;
 
     #[test]
@@ -172,26 +171,34 @@ mod test {
         // GameCommand::parse_from(["go", "north"]);
         // let cmd = GameCommand::parse_from(["", "go", "north"]);
         // let cmd = ClientGameCmd::parse_from(["go", "north"]);
-        let cmd = GameCmd::parse_from(["take", "nut", "cracker", "9000"]);
+        let cmd = GameCmd::try_parse_from(["take", "nut", "cracker", "9000"]);
         // println!("{:?}", cmd.cmd);
-        println!("{:?}", cmd);
+        if cmd.is_ok() {
+            println!("{:?}", cmd);
+        }
+        assert!(cmd.is_err(), "can not YET take specififc items");
 
-        let cmd = GameCmd::parse_from(["go", "n"]);
+        let cmd = GameCmd::try_parse_from(["go", "n"]);
         // println!("{:?}", cmd.cmd);
-        println!("{:?}", cmd);
+        if cmd.is_err() {
+            println!("{:?}", cmd);
+        }
+        assert!(
+            cmd.is_ok_and(|parsed| parsed
+                == GameCmd::Go {
+                    direction: Direction::North
+                }),
+            "command was expected to parse to a \"{}\" command, holding the directions: \"{:?}\"",
+            GameCmdName::Go,
+            Direction::North
+        );
 
         let cmd = GameCmd::try_parse_from(["foo", "bar"]);
         // println!("{:?}", cmd.cmd);
-        println!("{:?}", cmd);
+        if cmd.is_ok() {
+            println!("{:?}", cmd);
+        }
         assert!(cmd.is_err(), "foo bar is a command now?, since when?")
-
-        // assert_eq!(
-        //     cmd,
-        //     GameCmd::Go {
-        //         direction: Direction::North
-        //     },
-        //     "expected cmd: \"go north\", got: {cmd:?}"
-        // )
 
         // assert!(1 == 0);
     }
@@ -259,6 +266,19 @@ mod test {
         // assert!(1 == 0);
 
         let cmd = match SlashCmd::try_parse_from(["/help", "go"]) {
+            Ok(cmd) => cmd,
+            Err(e) => panic!("{e}"),
+        };
+
+        assert_eq!(
+            cmd,
+            SlashCmd::Help {
+                with: GameCmdName::Go
+            },
+            "expected a \"/help\" command, got: {cmd:?}",
+        );
+
+        let cmd = match SlashCmd::try_parse_from(["/help", "walk"]) {
             Ok(cmd) => cmd,
             Err(e) => panic!("{e}"),
         };

@@ -111,8 +111,8 @@ pub enum InventoryState {
     #[serde(rename = "consumables", alias = "c")]
     #[clap(alias = "consumables", alias = "c")]
     Consumables,
-    #[serde(rename = "equipment", alias = "equip")]
-    #[clap(alias = "equipment", alias = "equip")]
+    #[serde(rename = "equipment", alias = "equip", alias = "e")]
+    #[clap(alias = "equipment", alias = "equip", alias = "e")]
     Equipment,
     #[serde(rename = "weapons", alias = "w")]
     #[clap(alias = "weapons", alias = "w")]
