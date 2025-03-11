@@ -100,10 +100,10 @@ impl Default for CmdHistory {
 
 impl CmdHistory {
     pub fn push(&mut self, cmd: String) {
-        self.history.push_back(cmd);
+        self.history.push_front(cmd);
 
         if self.history.len() == self.max_len {
-            self.history.pop_front();
+            self.history.pop_back();
         }
     }
 
@@ -137,7 +137,7 @@ impl Plugin for TextUiPlugin {
                     listener,
                     set_main_body.run_if(in_state(MainScreenState::MainGame)),
                     update_cmd_history,
-                    navigate_cmd_history,
+                    navigate_cmd_history.run_if(in_state(MainScreenState::MainGame)),
                 )
                     .after(TextInputSystem)
                     .run_if(in_state(MainState::InGame))
@@ -332,7 +332,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 offset: Val::Px(0.),
                                 color: GREEN.into(),
                             },
-                            // CmdPrompt,
+                            CmdPrompt,
                         ))
                         .with_children(|parent| {
                             parent.spawn((
@@ -458,7 +458,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                             ..Default::default()
                                         },
                                     ));
-                                    // TODO: Spawn "compass" label text here
+                                    // Spawn compass text
                                     spawn_compass(parent, text_font.clone());
                                 });
                             // TODO: spawn stats display.
@@ -679,7 +679,9 @@ fn navigate_cmd_history(
     keys: Res<ButtonInput<KeyCode>>,
     mut text_input: Query<&mut TextInputValue>,
 ) {
-    if let Ok(ref mut text_input) = text_input.get_single_mut() {
+    if let Ok(ref mut text_input) = text_input.get_single_mut()
+        && history.history.len() > 0
+    {
         if keys.just_pressed(KeyCode::ArrowUp) {
             if history.line_storage.is_some() {
                 history.scroll_i += 1;

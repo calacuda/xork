@@ -2,9 +2,13 @@ use crate::{
     ChangeScreen,
     commands::commands::ViewScreen,
     state::{InventoryState, MainScreenState, MainState},
-    ui::MainTextUiNode,
+    ui::{CmdPrompt, MainTextUiNode},
 };
-use bevy::prelude::*;
+use bevy::{
+    color::palettes::{css::GREEN, tailwind::GRAY_500},
+    prelude::*,
+};
+use bevy_simple_text_input::TextInputInactive;
 
 pub mod inventory;
 pub mod main_game;
@@ -15,6 +19,7 @@ pub struct MenuScreensPlugin;
 impl Plugin for MenuScreensPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((inventory::InventoryPlugin, main_game::MainUiPlugin))
+            .add_systems(OnEnter(MainScreenState::MainGame), enable_cmd_prompt)
             .add_systems(Update, change_screens.run_if(in_state(MainState::InGame)));
     }
 }
@@ -59,12 +64,33 @@ pub fn default_clear_main_window(
     // asset_server: Res<AssetServer>,
     main_screen: Query<Entity, With<MainTextUiNode>>,
 ) {
-    // let text_font = TextFont {
-    //     font: asset_server.load("fonts/AnonymousPro.ttf"),
-    //     ..default()
-    // };
-
     if let Ok(main_screen) = main_screen.get_single() {
         cmds.entity(main_screen).despawn_descendants();
+    }
+}
+
+pub fn disable_cmd_prompt(
+    mut cmd_prompt: Query<&mut Outline, With<CmdPrompt>>,
+    mut text_input: Query<&mut TextInputInactive>,
+) {
+    for ref mut prompt in cmd_prompt.iter_mut() {
+        prompt.color = GRAY_500.into();
+    }
+
+    for ref mut input_off in text_input.iter_mut() {
+        input_off.0 = true;
+    }
+}
+
+pub fn enable_cmd_prompt(
+    mut cmd_prompt: Query<&mut Outline, With<CmdPrompt>>,
+    mut text_input: Query<&mut TextInputInactive>,
+) {
+    for ref mut prompt in cmd_prompt.iter_mut() {
+        prompt.color = GREEN.into();
+    }
+
+    for ref mut input_off in text_input.iter_mut() {
+        input_off.0 = false;
     }
 }
