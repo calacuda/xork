@@ -15,9 +15,10 @@ use bevy::{
 };
 use bevy_simple_text_input::{
     TextInput, TextInputSubmitEvent, TextInputSystem, TextInputTextColor, TextInputTextFont,
+    TextInputValue,
 };
 use clap::Parser;
-use std::f32::consts::PI;
+use std::{collections::VecDeque, f32::consts::PI};
 use update::{UpdateLookSectionText, UpdateMainSectionText};
 
 pub mod update;
@@ -77,6 +78,40 @@ pub struct CompassSouthWestText;
 #[derive(Component)]
 struct Shape;
 
+#[derive(Resource, Debug)]
+pub struct CmdHistory {
+    pub history: VecDeque<String>,
+    pub scroll_i: usize,
+    pub line_storage: Option<String>,
+    pub max_len: usize,
+}
+
+impl Default for CmdHistory {
+    fn default() -> Self {
+        let max_len = 100;
+        Self {
+            history: VecDeque::with_capacity(max_len),
+            scroll_i: 0,
+            line_storage: None,
+            max_len,
+        }
+    }
+}
+
+impl CmdHistory {
+    pub fn push(&mut self, cmd: String) {
+        self.history.push_back(cmd);
+
+        if self.history.len() == self.max_len {
+            self.history.pop_front();
+        }
+    }
+
+    pub fn get_selected(&self) -> String {
+        self.history[self.scroll_i].clone()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct TextUiPlugin;
 
@@ -87,6 +122,7 @@ impl Plugin for TextUiPlugin {
             .add_event::<BadCommand>()
             .add_event::<UpdateMainSectionText>()
             .add_event::<UpdateLookSectionText>()
+            .init_resource::<CmdHistory>()
             .add_plugins(MenuScreensPlugin)
             .add_systems(OnEnter(MainState::InGame), (camera_setup, spawn_cube))
             .add_systems(
@@ -100,6 +136,8 @@ impl Plugin for TextUiPlugin {
                 (
                     listener,
                     set_main_body.run_if(in_state(MainScreenState::MainGame)),
+                    update_cmd_history,
+                    navigate_cmd_history,
                 )
                     .after(TextInputSystem)
                     .run_if(in_state(MainState::InGame))
@@ -622,6 +660,46 @@ pub fn set_camera_viewports(
             ),
             ..default()
         });
+    }
+}
+
+fn update_cmd_history(
+    mut events: EventReader<TextInputSubmitEvent>,
+    mut history: ResMut<CmdHistory>,
+) {
+    for ev in events.read() {
+        let cmd = ev.value.clone();
+
+        history.push(cmd);
+    }
+}
+
+fn navigate_cmd_history(
+    mut history: ResMut<CmdHistory>,
+    keys: Res<ButtonInput<KeyCode>>,
+    mut text_input: Query<&mut TextInputValue>,
+) {
+    if let Ok(ref mut text_input) = text_input.get_single_mut() {
+        if keys.just_pressed(KeyCode::ArrowUp) {
+            if history.line_storage.is_some() {
+                history.scroll_i += 1;
+                history.scroll_i %= history.history.len();
+            } else {
+                history.line_storage = Some(text_input.0.clone());
+            }
+
+            text_input.0 = history.get_selected();
+        } else if keys.just_pressed(KeyCode::ArrowDown) {
+            text_input.0 = if history.scroll_i > 0 {
+                history.scroll_i -= 1;
+                history.get_selected()
+            } else if let Some(cmd) = history.line_storage.clone() {
+                history.line_storage = None;
+                cmd
+            } else {
+                return;
+            };
+        }
     }
 }
 
