@@ -1,6 +1,7 @@
 use crate::HashMap;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumDiscriminants, EnumString};
 
 pub type ItemId = String;
 
@@ -76,7 +77,9 @@ pub enum EquipmentEffect {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumDiscriminants)]
+#[strum_discriminants(derive(EnumString, Display, Serialize, Deserialize, PartialOrd, Ord))]
+#[strum_discriminants(name(ItemTypeName))]
 pub enum ItemType {
     /// Single use items, i.e potions.
     Consumable { effects: Vec<ConsumableEffect> },
@@ -91,6 +94,8 @@ pub enum ItemType {
     /// items that can be used multiple times, and items that unlock events/new places on the map.
     KeyItem { effects: Vec<ConsumableEffect> },
 }
+
+// impl From<ItemType> for ItemTypeName {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, Asset, TypePath)]
 pub struct ItemAsset {
