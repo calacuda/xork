@@ -198,7 +198,6 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.spawn((
         Camera3d::default(),
-        // Transform::from_xyz(0.0, 0.0, 14.0).looking_at(Vec3::new(-3.5, 0.0, 0.0), Vec3::Y),
         Transform::from_xyz(0.0, 0.0, 8.0).looking_at(Vec3::new(0.0, 0.0, 0.0), Vec3::Y),
         Camera {
             viewport: Some(Viewport {
@@ -222,7 +221,6 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         UiCamera,
-        // ClearColorConfig: (Color::BLACK),
     ));
 
     commands
@@ -231,11 +229,6 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 width: Val::Percent(100.),
                 height: Val::Percent(100.),
                 flex_direction: FlexDirection::Row,
-                // align_items: AlignItems::Center,
-                // justify_content: JustifyContent::SpaceEvenly,
-                // position_type: PositionType::Absolute,
-                // top: Val::ZERO,
-                // left: Val::ZERO,
                 ..Default::default()
             },
             // BackgroundColor(Color::BLACK),
@@ -246,16 +239,8 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .spawn((
                     Node {
                         width: Val::Percent((10.0 / 16.0) * (100.0 - 7.5)),
-                        // height: Val::Percent((7.5 / 9.0) * 100.0),
                         height: Val::Percent(100.0),
                         flex_direction: FlexDirection::Column,
-                        // align_items: AlignItems::Center,
-                        // justify_content: JustifyContent::SpaceEvenly,
-                        // justify_content: JustifyContent::End,
-                        // justify_content: JustifyContent::Center,
-                        // position_type: PositionType::Relative,
-                        // top: Val::ZERO,
-                        // left: Val::ZERO,
                         margin: UiRect {
                             left: Val::Percent(2.5),
                             right: Val::Percent(2.5),
@@ -268,25 +253,9 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ))
                 .with_children(|parent| {
                     parent.spawn((
-                        // Text::new("Use the panel on the right to change the Display and Visibility properties for the respective nodes of the panel on the left"),
-                        // TextSpan::default(),
-                        // text_font.clone().with_font_size(30.0),
-                        // TextLayout::new_with_justify(JustifyText::Left),
                         Node {
                             height: Val::Percent((8.0 / 9.0) * (100.0 - 7.5)),
-                            // max_height: Val::Percent((8.0 / 9.0) * 100.0 - 5.0),
-                            // width: Val::Percent(100.),
-                            // height: Val::Percent(100.),
-                            // margin: UiRect::bottom(Val::Px(10.)),
-                            // margin: UiRect::bottom(Val::Percent(())),
-                            // justify_content: JustifyContent::FlexStart,
                             flex_direction: FlexDirection::Column,
-                            // margin: UiRect {
-                            //     left: Val::Px(0.0),
-                            //     right: Val::Px(0.0),
-                            //     top: Val::Px(0.0),
-                            //     bottom: Val::Px(0.0),
-                            // },
                             overflow: Overflow::clip_y(),
                             ..Default::default()
                         },
@@ -302,19 +271,8 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     // Spawn Command Prompt
                     parent
                         .spawn((
-                            // Text::new("> "),
-                            // Text::new("MOCK-CMD"),
-                            // TextSpan::new(["> ", "MOCK-CMD"]),
-                            // TextSpan::default(),
-                            // text_font.clone().with_font_size(60.0),
-                            // TextLayout::new_with_justify(JustifyText::Left),
                             Node {
                                 height: Val::Percent(((9.0 - 8.0) / 9.0) * (100.0 - 10.)),
-                                // width: Val::Percent(100.),
-                                // height: Val::Percent(100.),
-                                // margin: UiRect::bottom(Val::Px(10.)),
-                                // margin: UiRect::bottom(Val::Percent(())),
-                                // justify_content: JustifyContent::FlexStart,
                                 align_items: AlignItems::Center,
                                 margin: UiRect {
                                     left: Val::Px(0.0),
@@ -375,16 +333,11 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent
                 .spawn((Node {
                     width: Val::Percent((6.0 / 16.0) * (100.0 - 5.0)),
-                    // height: Val::Percent((7.5 / 9.0) * 100.0),
                     height: Val::Percent(100.0 - 4.125),
                     flex_direction: FlexDirection::Column,
                     align_items: AlignItems::End,
-                    // justify_content: JustifyContent::SpaceEvenly,
                     justify_content: JustifyContent::End,
-                    // justify_content: JustifyContent::Center,
-                    // position_type: PositionType::Relative,
-                    // top: Val::ZERO,
-                    // left: Val::ZERO,
+
                     margin: UiRect {
                         left: Val::Percent(0.),
                         right: Val::Percent(2.5),
@@ -402,13 +355,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 // height: Val::Percent((7.5 / 9.0) * 100.0),
                                 height: Val::Percent(0.5 * 100.0),
                                 flex_direction: FlexDirection::Column,
-                                // align_items: AlignItems::End,
-                                // justify_content: JustifyContent::SpaceEvenly,
-                                // justify_content: JustifyContent::End,
-                                // justify_content: JustifyContent::Center,
-                                // position_type: PositionType::Relative,
-                                // top: Val::ZERO,
-                                // left: Val::ZERO,
+
                                 margin: UiRect {
                                     left: Val::Percent(2.5),
                                     right: Val::Percent(0.0),
