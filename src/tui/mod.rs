@@ -2,7 +2,7 @@ use crate::CommandEntered;
 use crate::zones::Zone;
 use bevy::prelude::*;
 use ratatui::{
-    crossterm::event::{self, Event, KeyCode},
+    crossterm::event::{self, Message, KeyCode},
     prelude::Direction as TermUiDir,
     prelude::*,
     text::Line,
@@ -45,18 +45,18 @@ pub struct Term(pub Terminal<CrosstermBackend<Stdout>>);
 pub fn tui_update(
     mut tui: ResMut<ClientTui>,
     mut terminal: ResMut<Term>,
-    mut exit: EventWriter<AppExit>,
-    mut cmd_events: EventWriter<CommandEntered>,
+    mut exit: MessageWriter<AppExit>,
+    mut cmd_events: MessageWriter<CommandEntered>,
     zone: Res<Zone>,
 ) {
     let Ok(_) = terminal.0.draw(|f| ui(f, &tui, zone.to_owned())) else {
-        exit.send(AppExit::Error(NonZero::new(5 as u8).unwrap()));
+        exit.write(AppExit::Error(NonZero::new(5 as u8).unwrap()));
         return;
     };
 
     if event::poll(Duration::from_nanos(1)).is_ok_and(|b| b) {
         let Ok(ev) = event::read() else {
-            exit.send(AppExit::Error(NonZero::new(6 as u8).unwrap()));
+            exit.write(AppExit::Error(NonZero::new(6 as u8).unwrap()));
             return;
         };
 
@@ -65,11 +65,11 @@ pub fn tui_update(
                 KeyCode::Enter => {
                     let input = tui.input.value().to_lowercase();
                     if input == "quit" || input == "exit" || input == ":q" {
-                        exit.send(AppExit::Success);
+                        exit.write(AppExit::Success);
                     } else {
                         let mesg: String = tui.input.value().into();
                         // tui.messages.push(mesg.clone());
-                        cmd_events.send(CommandEntered(mesg));
+                        cmd_events.write(CommandEntered(mesg));
 
                         tui.input.reset();
                     }

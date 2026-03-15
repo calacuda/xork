@@ -16,8 +16,8 @@ use bevy::{
 
 /// moves players from zone to zone
 pub fn handle_player_movement(
-    mut player_move_events: EventReader<PlayerMovement>,
-    mut new_zone_ev: EventWriter<NewZone>,
+    mut player_move_events: MessageReader<PlayerMovement>,
+    mut new_zone_ev: MessageWriter<NewZone>,
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     mut location: ResMut<Location>,
@@ -39,10 +39,10 @@ pub fn handle_player_movement(
             if zones.0.get(new_zone_asset_path).is_some() {
                 location.0 = new_zone_asset_path.to_owned();
                 _ = look_text
-                    .get_single_mut()
+                    .single_mut()
                     .map(|mut text| text.0 = String::new());
                 debug!("player moved {:?}", ev.0);
-                new_zone_ev.send_default();
+                new_zone_ev.write_default();
             } else {
                 error!("player tried to move {:?}, but failed.", ev.0);
                 debug!("{zones:?}.get({new_zone_asset_path})")
@@ -57,38 +57,38 @@ pub fn handle_player_movement(
 }
 
 pub fn send_new_zone(
-    mut new_zone_ev: EventWriter<NewZone>,
+    mut new_zone_ev: MessageWriter<NewZone>,
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     location: Res<Location>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     if zone_assets.get(zones.0.get(&location.0).unwrap()).is_some() {
-        new_zone_ev.send_default();
+        new_zone_ev.write_default();
         next_state.set(GameState::Adventure);
     }
 }
 
 /// updated the main text display
 pub fn set_main_body(
-    mut new_zone_evs: EventReader<NewZone>,
+    mut new_zone_evs: MessageReader<NewZone>,
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     location: Res<Location>,
-    mut update_event: EventWriter<UpdateMainSectionText>,
+    mut update_event: MessageWriter<UpdateMainSectionText>,
 ) {
     for _ev in new_zone_evs.read() {
         zone_assets
             .get(zones.0.get(&location.0).unwrap())
             .map(|zone_asset| {
-                update_event.send(UpdateMainSectionText(zone_asset.description.clone()));
+                update_event.write(UpdateMainSectionText(zone_asset.description.clone()));
             });
     }
 }
 
 /// moves players from zone to zone
 pub fn compass_update(
-    mut new_zone_evs: EventReader<NewZone>,
+    mut new_zone_evs: MessageReader<NewZone>,
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     location: Res<Location>,
@@ -258,16 +258,16 @@ pub fn compass_update(
 
     for _ev in new_zone_evs.read() {
         let colors = [
-            (Direction::Up, c_u.get_single_mut()),
-            (Direction::Down, c_d.get_single_mut()),
-            (Direction::North, c_n.get_single_mut()),
-            (Direction::South, c_s.get_single_mut()),
-            (Direction::East, c_e.get_single_mut()),
-            (Direction::West, c_w.get_single_mut()),
-            (Direction::NorthEast, c_ne.get_single_mut()),
-            (Direction::NorthWest, c_nw.get_single_mut()),
-            (Direction::SouthEast, c_se.get_single_mut()),
-            (Direction::SouthWest, c_sw.get_single_mut()),
+            (Direction::Up, c_u.single_mut()),
+            (Direction::Down, c_d.single_mut()),
+            (Direction::North, c_n.single_mut()),
+            (Direction::South, c_s.single_mut()),
+            (Direction::East, c_e.single_mut()),
+            (Direction::West, c_w.single_mut()),
+            (Direction::NorthEast, c_ne.single_mut()),
+            (Direction::NorthWest, c_nw.single_mut()),
+            (Direction::SouthEast, c_se.single_mut()),
+            (Direction::SouthWest, c_sw.single_mut()),
         ];
 
         if let Some(from) = zones.0.get(&loc) {

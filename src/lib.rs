@@ -1,4 +1,3 @@
-#![feature(let_chains)]
 use bevy::{prelude::*, window::WindowResized};
 use commands::commands::{Direction, ViewScreen};
 use fxhash::{FxHashMap, FxHashSet};
@@ -26,31 +25,31 @@ pub type HashMap<K, V> = FxHashMap<K, V>;
 pub type HashSet<V> = FxHashSet<V>;
 pub type CommandResponseType = Result<GenerincFlavorText, GenerincFlavorText>;
 
-#[derive(Debug, Clone, Event)]
+#[derive(Debug, Clone, Message)]
 pub struct CommandEntered(pub String);
 
-#[derive(Debug, Clone, Event)]
+#[derive(Debug, Clone, Message)]
 pub struct CommandResultEvent(pub CommandResponseType);
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct PlayerMovement(pub Direction);
 
-#[derive(Event)]
+#[derive(Message)]
 pub enum UiMessage {}
 
-#[derive(Event, Default)]
+#[derive(Message, Default)]
 pub struct PlayerLook;
 
-#[derive(Event, Default)]
+#[derive(Message, Default)]
 pub struct ExitGame;
 
-#[derive(Event, Default)]
+#[derive(Message, Default)]
 pub struct NewZone;
 
-#[derive(Event, Default)]
+#[derive(Message, Default)]
 pub struct PlayerTake;
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct ChangeScreen {
     to_screen: ViewScreen,
 }
@@ -62,7 +61,7 @@ pub enum NotificationLevel {
     Normal,
 }
 
-#[derive(Event, Clone, Debug)]
+#[derive(Message, Clone, Debug)]
 pub struct Notification {
     pub level: NotificationLevel,
     pub time_stamp: Instant,
@@ -91,8 +90,8 @@ pub fn enter_in_game_state(mut next_state: ResMut<NextState<MainState>>) {
     next_state.set(MainState::InGame);
 }
 
-pub fn exit_game(mut app_exit_events: EventWriter<AppExit>) {
-    app_exit_events.send(AppExit::Success);
+pub fn exit_game(mut app_exit_events: MessageWriter<AppExit>) {
+    app_exit_events.write(AppExit::Success);
 }
 
 pub fn enter_exit_state(mut next_state: ResMut<NextState<MainState>>) {
@@ -101,7 +100,7 @@ pub fn enter_exit_state(mut next_state: ResMut<NextState<MainState>>) {
 
 pub fn maintain_window_size(
     windows: Query<&Window>,
-    mut resize_events: EventReader<WindowResized>,
+    mut resize_events: MessageReader<WindowResized>,
     mut window_size: ResMut<WindowSize>,
     // mut camera: Query<&mut Camera, With<VisualizationCamera>>,
 ) {

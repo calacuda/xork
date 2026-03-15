@@ -8,13 +8,13 @@ use crate::{
     state::{GameState, MainScreenState, MainState},
 };
 use bevy::{
+    camera::Viewport,
     color::palettes::{css::GREEN, tailwind::AMBER_500},
     prelude::*,
-    render::camera::Viewport,
     window::WindowResized,
 };
 use bevy_simple_text_input::{
-    TextInput, TextInputSubmitEvent, TextInputSystem, TextInputTextColor, TextInputTextFont,
+    TextInput, TextInputSubmitMessage, TextInputSystem, TextInputTextColor, TextInputTextFont,
     TextInputValue,
 };
 use clap::Parser;
@@ -117,11 +117,11 @@ pub struct TextUiPlugin;
 
 impl Plugin for TextUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<GameCmd>()
-            .add_event::<SlashCmd>()
-            .add_event::<BadCommand>()
-            .add_event::<UpdateMainSectionText>()
-            .add_event::<UpdateLookSectionText>()
+        app.add_message::<GameCmd>()
+            .add_message::<SlashCmd>()
+            .add_message::<BadCommand>()
+            .add_message::<UpdateMainSectionText>()
+            .add_message::<UpdateLookSectionText>()
             .init_resource::<CmdHistory>()
             .add_plugins(MenuScreensPlugin)
             .add_systems(OnEnter(MainState::InGame), (camera_setup, spawn_cube))
@@ -147,10 +147,10 @@ impl Plugin for TextUiPlugin {
 }
 
 fn listener(
-    mut events: EventReader<TextInputSubmitEvent>,
-    mut cmd_event: EventWriter<GameCmd>,
-    mut slash_cmd_event: EventWriter<SlashCmd>,
-    mut bad_cmd_event: EventWriter<BadCommand>,
+    mut events: MessageReader<TextInputSubmitMessage>,
+    mut cmd_event: MessageWriter<GameCmd>,
+    mut slash_cmd_event: MessageWriter<SlashCmd>,
+    mut bad_cmd_event: MessageWriter<BadCommand>,
 ) {
     for event in events.read() {
         info!("Player submitted command: {}", event.value);
@@ -163,11 +163,11 @@ fn listener(
             match command {
                 Ok(command) => {
                     // fire command evvent
-                    cmd_event.send(command);
+                    cmd_event.write(command);
                 }
                 Err(_e) => {
                     // fire unrecognized command event
-                    bad_cmd_event.send_default();
+                    bad_cmd_event.write_default();
                 }
             }
         } else {
@@ -177,11 +177,11 @@ fn listener(
             match command {
                 Ok(command) => {
                     // fire shash command event
-                    slash_cmd_event.send(command);
+                    slash_cmd_event.write(command);
                 }
                 Err(_e) => {
                     // fire unrecognized command event
-                    bad_cmd_event.send_default();
+                    bad_cmd_event.write_default();
                 }
             }
         }
@@ -297,7 +297,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 Text::new("> "),
                                 TextColor(AMBER_500.into()),
                                 text_font.clone().with_font_size(60.0),
-                                TextLayout::new_with_justify(JustifyText::Left),
+                                TextLayout::new_with_justify(Justify::Left),
                                 Node {
                                     margin: UiRect {
                                         left: Val::Percent(2.5),
@@ -315,7 +315,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 TextInput,
                                 TextInputTextColor(TextColor(AMBER_500.into())),
                                 TextInputTextFont(text_font.clone().with_font_size(60.0)),
-                                TextLayout::new_with_justify(JustifyText::Left),
+                                TextLayout::new_with_justify(Justify::Left),
                                 Node {
                                     margin: UiRect {
                                         left: Val::Px(0.0),
@@ -392,7 +392,7 @@ fn camera_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                         Text::new("STATS: "),
                                         text_font.clone().with_font_size(60.0),
                                         TextColor(AMBER_500.into()),
-                                        TextLayout::new_with_justify(JustifyText::Left)
+                                        TextLayout::new_with_justify(Justify::Left)
                                             .with_linebreak(LineBreak::WordBoundary),
                                         Node {
                                             // flex_direction: FlexDirection::Row,
@@ -441,15 +441,12 @@ fn spawn_cube(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
     ));
 }
 
-fn spawn_compass(
-    parent: &mut <EntityCommands<'_> as BuildChildren>::Builder<'_>,
-    text_font: TextFont,
-) {
+fn spawn_compass(parent: &mut ChildSpawnerCommands<'_>, text_font: TextFont) {
     parent
         .spawn((
             // Text::new("STATS:"),
             // text_font.clone().with_font_size(60.0),
-            // TextLayout::new_with_justify(JustifyText::Left).with_linebreak(LineBreak::WordBoundary),
+            // TextLayout::new_with_justify(Justify::Left).with_linebreak(LineBreak::WordBoundary),
             Node {
                 width: Val::Percent(100.0),
                 flex_direction: FlexDirection::Row,
@@ -485,20 +482,20 @@ fn spawn_compass(
                     parent.spawn((
                         Text::new("U"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassUpText,
                     ));
                     // parent.spawn(
                     //     (
                     //         Text::new(" "),
                     //         text_font.clone().with_font_size(25.0),
-                    //         TextLayout::new_with_justify(JustifyText::Center),
+                    //         TextLayout::new_with_justify(Justify::Center),
                     //     )
                     // );
                     parent.spawn((
                         Text::new("D"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassDownText,
                     ));
                 });
@@ -511,19 +508,19 @@ fn spawn_compass(
                     parent.spawn((
                         Text::new("NW"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassNorthWestText,
                     ));
                     parent.spawn((
                         Text::new("W"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassWestText,
                     ));
                     parent.spawn((
                         Text::new("SW"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassSouthWestText,
                     ));
                 });
@@ -536,18 +533,18 @@ fn spawn_compass(
                     parent.spawn((
                         Text::new("N"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassNorthText,
                     ));
                     parent.spawn((
                         Text::new("*"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                     ));
                     parent.spawn((
                         Text::new("S"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassSouthText,
                     ));
                 });
@@ -560,19 +557,19 @@ fn spawn_compass(
                     parent.spawn((
                         Text::new("NE"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassNorthEastText,
                     ));
                     parent.spawn((
                         Text::new("E"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassEastText,
                     ));
                     parent.spawn((
                         Text::new("SE"),
                         text_font.clone().with_font_size(25.0),
-                        TextLayout::new_with_justify(JustifyText::Center),
+                        TextLayout::new_with_justify(Justify::Center),
                         CompassSouthEastText,
                     ));
                 });
@@ -587,7 +584,7 @@ fn rotate(mut query: Query<&mut Transform, With<Shape>>, time: Res<Time>) {
 
 pub fn set_camera_viewports(
     windows: Query<&Window>,
-    mut resize_events: EventReader<WindowResized>,
+    mut resize_events: MessageReader<WindowResized>,
     mut camera: Query<&mut Camera, With<VisualizationCamera>>,
 ) {
     // We need to dynamically resize the camera's viewports whenever the window size changes
@@ -595,7 +592,9 @@ pub fn set_camera_viewports(
     // A resize_event is sent when the window is first created, allowing us to reuse this system for initial setup.
     for resize_event in resize_events.read() {
         let window = windows.get(resize_event.window).unwrap();
-        let mut camera = camera.single_mut();
+        let Ok(mut camera) = camera.single_mut() else {
+            continue;
+        };
         camera.viewport = Some(Viewport {
             physical_position: UVec2::new(
                 (window.resolution.physical_width() as f32 * (10.0 / 16.0)) as u32,
@@ -611,7 +610,7 @@ pub fn set_camera_viewports(
 }
 
 fn update_cmd_history(
-    mut events: EventReader<TextInputSubmitEvent>,
+    mut events: MessageReader<TextInputSubmitMessage>,
     mut history: ResMut<CmdHistory>,
 ) {
     for ev in events.read() {
@@ -626,7 +625,7 @@ fn navigate_cmd_history(
     keys: Res<ButtonInput<KeyCode>>,
     mut text_input: Query<&mut TextInputValue>,
 ) {
-    if let Ok(ref mut text_input) = text_input.get_single_mut()
+    if let Ok(ref mut text_input) = text_input.single_mut()
         && history.history.len() > 0
     {
         if keys.just_pressed(KeyCode::ArrowUp) {

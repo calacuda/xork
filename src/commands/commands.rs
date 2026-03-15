@@ -77,7 +77,7 @@ pub enum ViewScreen {
     Clone,
     Serialize,
     Deserialize,
-    Event,
+    Message,
     Parser,
     PartialEq,
     Eq,
@@ -126,7 +126,7 @@ pub enum GameCmd {
     // TODO: make a "map" command that allow the player to check a mini map.
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Event, Parser, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Serialize, Deserialize, Message, Parser, PartialEq, Eq, PartialOrd, Ord)]
 #[command(version, about, no_binary_name(true), long_about = None)]
 pub enum SlashCmd {
     // #[clap(name = "/say", alias = "/speak", alias = "/chat")]

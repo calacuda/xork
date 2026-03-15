@@ -8,7 +8,7 @@ use bevy::prelude::*;
 /// displays more information to the player.
 pub fn handle_player_take(
     mut cmds: Commands,
-    mut player_take_evs: EventReader<PlayerTake>,
+    mut player_take_evs: MessageReader<PlayerTake>,
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     location: Res<Location>,

@@ -2,15 +2,15 @@ use crate::{ChangeScreen, ExitGame, commands::commands::SlashCmd};
 use bevy::prelude::*;
 
 pub fn slash_cmd(
-    mut commands: EventReader<SlashCmd>,
-    mut exit_ev: EventWriter<ExitGame>,
-    mut view_ev: EventWriter<ChangeScreen>,
-    // mut player_look_ev: EventWriter<PlayerLook>,
+    mut commands: MessageReader<SlashCmd>,
+    mut exit_ev: MessageWriter<ExitGame>,
+    mut view_ev: MessageWriter<ChangeScreen>,
+    // mut player_look_ev: MessageWriter<PlayerLook>,
 ) {
     for command in commands.read() {
         match command {
             SlashCmd::Exit {} => {
-                exit_ev.send_default();
+                exit_ev.write_default();
             }
             SlashCmd::Help { with: _ } => {
                 // TODO: get help
@@ -19,7 +19,7 @@ pub fn slash_cmd(
                 // TODO: save to save slot
             }
             SlashCmd::View { screen } => {
-                view_ev.send(ChangeScreen {
+                view_ev.write(ChangeScreen {
                     to_screen: screen.clone(),
                 });
             }

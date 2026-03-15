@@ -7,8 +7,8 @@ use bevy::prelude::*;
 
 /// displays more information to the player.
 pub fn handle_player_look(
-    mut player_move_events: EventReader<PlayerLook>,
-    mut look_event: EventWriter<UpdateLookSectionText>,
+    mut player_move_events: MessageReader<PlayerLook>,
+    mut look_event: MessageWriter<UpdateLookSectionText>,
     zone_assets: Res<Assets<ZoneAsset>>,
     zones: Res<Zones>,
     location: Res<Location>,
@@ -24,7 +24,7 @@ pub fn handle_player_look(
 
             let look_text =
                 look_text.unwrap_or("You looked around and saw nothing else of interest...".into());
-            look_event.send(UpdateLookSectionText(look_text));
+            look_event.write(UpdateLookSectionText(look_text));
             info!("player took a closer look at zone {loc:?}");
         } else {
             error!(

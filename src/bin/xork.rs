@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             RonAssetPlugin::<MobAsset>::new(&["mob.ron"]),
             RonAssetPlugin::<ItemAsset>::new(&["item.ron"]),
             TextUiPlugin,
-            WireframePlugin,
+            WireframePlugin::default(),
             TextInputPlugin,
             // MenuScreensPlugin,
             // Wireframe2dPlugin,
@@ -88,17 +88,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         .add_sub_state::<GameState>()
         .add_sub_state::<MainScreenState>()
         .add_sub_state::<InventoryState>()
-        .add_event::<CommandEntered>()
-        .add_event::<UiMessage>()
-        .add_event::<PlayerMovement>()
-        .add_event::<PlayerLook>()
-        .add_event::<Notification>()
-        .add_event::<CommandResultEvent>()
-        .add_event::<ExitGame>()
-        .add_event::<SlashCmd>()
-        .add_event::<NewZone>()
-        .add_event::<PlayerTake>()
-        .add_event::<ChangeScreen>()
+        .add_message::<CommandEntered>()
+        .add_message::<UiMessage>()
+        .add_message::<PlayerMovement>()
+        .add_message::<PlayerLook>()
+        .add_message::<Notification>()
+        .add_message::<CommandResultEvent>()
+        .add_message::<ExitGame>()
+        .add_message::<SlashCmd>()
+        .add_message::<NewZone>()
+        .add_message::<PlayerTake>()
+        .add_message::<ChangeScreen>()
         .init_asset::<ZoneAsset>()
         .init_asset::<MobAsset>()
         .add_systems(

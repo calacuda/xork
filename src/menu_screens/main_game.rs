@@ -26,8 +26,8 @@ impl Plugin for MainUiPlugin {
     }
 }
 
-pub fn refresh_game_display(mut new_zone_ev: EventWriter<NewZone>) {
-    new_zone_ev.send_default();
+pub fn refresh_game_display(mut new_zone_ev: MessageWriter<NewZone>) {
+    new_zone_ev.write_default();
 }
 
 pub fn setup_main_menu(
@@ -40,12 +40,12 @@ pub fn setup_main_menu(
         ..default()
     };
 
-    if let Ok(main_screen) = main_screen.get_single() {
+    if let Ok(main_screen) = main_screen.single() {
         cmds.entity(main_screen).with_children(|parent| {
             parent.spawn((
                 Text::default(),
                 text_font.clone().with_font_size(30.0),
-                TextLayout::new_with_justify(JustifyText::Left)
+                TextLayout::new_with_justify(Justify::Left)
                     .with_linebreak(LineBreak::WordBoundary),
                 TextColor(AMBER_500.into()),
                 Node {
@@ -62,7 +62,7 @@ pub fn setup_main_menu(
             parent.spawn((
                 Text::default(),
                 text_font.clone().with_font_size(30.0),
-                TextLayout::new_with_justify(JustifyText::Left)
+                TextLayout::new_with_justify(Justify::Left)
                     .with_linebreak(LineBreak::WordBoundary),
                 TextColor(AMBER_500.into()),
                 Node {

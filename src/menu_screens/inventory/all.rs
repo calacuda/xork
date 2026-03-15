@@ -30,7 +30,7 @@ impl Plugin for AllItemsPlugin {
 }
 
 fn navigate_inventory(
-    mut nav_evs: EventReader<InvNavDir>,
+    mut nav_evs: MessageReader<InvNavDir>,
     inventory: Query<&InventoryEntry>,
     mut inv_index: ResMut<InvIndex>,
     // mut inv_screen: ResMut<NextState<InventoryState>>,
@@ -79,12 +79,12 @@ pub fn setup_all_items_inventory_menu(
 
     // error!("viewing all items");
 
-    if let Ok(main_screen) = main_screen.get_single() {
+    if let Ok(main_screen) = main_screen.single() {
         cmds.entity(main_screen).with_children(|parent| {
             parent.spawn((
                 Text::new("Inventory => All Items"),
                 text_font.clone().with_font_size(60.0),
-                TextLayout::new(JustifyText::Center, LineBreak::WordBoundary),
+                TextLayout::new(Justify::Center, LineBreak::WordBoundary),
                 TextColor(AMBER_500.into()),
                 // ItemDisplayText,
             ));
@@ -149,7 +149,7 @@ pub fn display_items(
     if !inv.is_empty() {
         (0..(min(18, inv.len()))).for_each(|i| {
             // let entry = inv[i];
-            cmds.entity(text_nodes[i].0).despawn_descendants();
+            cmds.entity(text_nodes[i].0).despawn_children();
             // let item = inv[i + inv_index.1].clone();
 
             if let Some(item) = inv.get(i + inv_index.1) {
@@ -199,21 +199,21 @@ pub fn display_items(
                     parent.spawn((
                         Text::new(format!("#{: <3} =>", i + 1 + inv_index.1,)),
                         text_font.clone().with_font_size(30.0),
-                        TextLayout::new(JustifyText::Left, LineBreak::WordBoundary),
+                        TextLayout::new(Justify::Left, LineBreak::WordBoundary),
                         TextColor(AMBER_500.into()),
                         ItemDisplayText,
                     ));
                     parent.spawn((
                         Text::new(item.name.clone()),
                         text_font.clone().with_font_size(30.0),
-                        TextLayout::new(JustifyText::Left, LineBreak::WordBoundary),
+                        TextLayout::new(Justify::Left, LineBreak::WordBoundary),
                         TextColor(AMBER_500.into()),
                         ItemDisplayText,
                     ));
                     parent.spawn((
                         Text::new(format!("{}", ItemTypeName::from(item.item_data.clone()))),
                         text_font.clone().with_font_size(30.0),
-                        TextLayout::new(JustifyText::Left, LineBreak::WordBoundary),
+                        TextLayout::new(Justify::Left, LineBreak::WordBoundary),
                         TextColor(AMBER_500.into()),
                         ItemDisplayText,
                     ));
@@ -224,7 +224,7 @@ pub fn display_items(
                         parent.spawn((
                             Text::new(item.description.clone()),
                             text_font.clone().with_font_size(30.0),
-                            TextLayout::new(JustifyText::Center, LineBreak::WordBoundary),
+                            TextLayout::new(Justify::Center, LineBreak::WordBoundary),
                             TextColor(AMBER_500.into()),
                             ItemDisplayText,
                         ));
@@ -235,12 +235,12 @@ pub fn display_items(
             }
         })
     } else {
-        cmds.entity(text_nodes[0].0).despawn_descendants();
+        cmds.entity(text_nodes[0].0).despawn_children();
         cmds.entity(text_nodes[0].0).with_children(|parent| {
             parent.spawn((
                 Text::new("Inventory Empty"),
                 text_font.clone().with_font_size(30.0),
-                TextLayout::new(JustifyText::Left, LineBreak::WordBoundary),
+                TextLayout::new(Justify::Left, LineBreak::WordBoundary),
                 TextColor(AMBER_500.into()),
                 ItemDisplayText,
                 InventoryOrder(0),

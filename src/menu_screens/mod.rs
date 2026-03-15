@@ -25,7 +25,7 @@ impl Plugin for MenuScreensPlugin {
 }
 
 pub fn change_screens(
-    mut view_evs: EventReader<ChangeScreen>,
+    mut view_evs: MessageReader<ChangeScreen>,
     mut screen_state: ResMut<NextState<MainScreenState>>,
     mut inv_screen_state: ResMut<NextState<InventoryState>>,
 ) {
@@ -64,8 +64,8 @@ pub fn default_clear_main_window(
     // asset_server: Res<AssetServer>,
     main_screen: Query<Entity, With<MainTextUiNode>>,
 ) {
-    if let Ok(main_screen) = main_screen.get_single() {
-        cmds.entity(main_screen).despawn_descendants();
+    if let Ok(main_screen) = main_screen.single() {
+        cmds.entity(main_screen).despawn_children();
     }
 }
 

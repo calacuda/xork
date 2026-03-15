@@ -64,7 +64,7 @@ struct GameCommand {
     cmd: ClientGameCmd,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Event, Parser, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Serialize, Deserialize, Message, Parser, PartialEq, Eq, PartialOrd, Ord)]
 #[command(version, about, no_binary_name(true), long_about = None)]
 pub enum ClientGameCmd {
     // #[serde(rename = "help")]
@@ -87,7 +87,7 @@ pub enum ClientGameCmd {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Event, Parser, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Serialize, Deserialize, Message, Parser, PartialEq, Eq, PartialOrd, Ord)]
 #[command(version, about, no_binary_name(true), long_about = None)]
 pub enum ClientSlashCmd {
     #[clap(name = "/say")]
