@@ -129,7 +129,7 @@ pub enum GameCmd {
 #[derive(Debug, Clone, Serialize, Deserialize, Event, Parser, PartialEq, Eq, PartialOrd, Ord)]
 #[command(version, about, no_binary_name(true), long_about = None)]
 pub enum SlashCmd {
-    // #[clap(name = "/say")]
+    // #[clap(name = "/say", alias = "/speak", alias = "/chat")]
     // Say {
     //     // #[arg(short, long, num_args = 1, /* required_if_eq("to", "dm") */)]
     //     // player: Option<PlayerName>,
